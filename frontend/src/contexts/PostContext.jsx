@@ -10,16 +10,11 @@ export const PostProvider = ({ children }) => {
   const [error, setError] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
-  // Questa variabile d'ambiente decide se le chiamate al backend sono abilitate in sviluppo.
-  // Se VITE_USE_BACKEND_IN_DEV è 'true', useremo il backend in dev.
   const isBackendEnabledInDev =
     import.meta.env.VITE_USE_BACKEND_IN_DEV === "true";
 
-  // Questa variabile è 'true' solo se l'applicazione è in modalità di produzione (npm run build).
   const isProduction = import.meta.env.MODE === "production";
 
-  // Determina se dobbiamo fare chiamate al backend per i dati "reali" (non mock).
-  // Questo sarà vero se il backend è abilitato in dev O se siamo in produzione.
   const shouldFetchFromBackend = isBackendEnabledInDev || isProduction;
 
   const getAllPosts = async () => {
