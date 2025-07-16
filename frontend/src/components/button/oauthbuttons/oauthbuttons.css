@@ -1,0 +1,4 @@
+.btn-outline-dark {
+  color: var(--btn-text-light);
+  border-color: var(--btn-text-light);
+}

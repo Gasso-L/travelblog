@@ -1,0 +1,69 @@
+@import url("https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Inter:wght@400;600&display=swap");
+
+:root {
+  --bs-font-sans-serif: "Inter", sans-serif;
+  --bs-font-serif: "Lora", serif;
+  --bg: #0d1117;
+  --surface: #161b22;
+  --text: #e6edf3;
+  --heading: #f0f6fc;
+  --primary: #3b82f6;
+  --text-grey: #b2b2bb;
+  --text-red: #b23b3b;
+
+  --btn-border: #30363d;
+  --btn-accent-color: #f59e0b;
+  --btn-accent-hover: #d97706;
+  --btn-accent-active-focus: #b45309;
+  --btn-text-dark: #1a1a1a;
+  --btn-text-light: #f0f6fc;
+  --btn-ghost-bg-hover: rgba(245, 158, 11, 0.1);
+
+  --star-icon: #ffd700;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--bs-font-sans-serif);
+  height: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--bs-font-serif) !important;
+  color: var(--heading) !important;
+}
+
+button,
+.btn {
+  font-family: var(--bs-font-sans-serif);
+  font-weight: 600;
+}
+
+.nav-link {
+  font-family: var(--bs-font-sans-serif);
+  font-weight: 600;
+}
+
+.main-content {
+  min-height: calc(100dvh - 370px);
+}
+
+.toast-dark {
+  background-color: #1f1f1f !important;
+  color: #f8f9fa !important;
+  font-weight: 500;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.toast-dark .Toastify__progress-bar {
+  background: #ff914d !important;
+}

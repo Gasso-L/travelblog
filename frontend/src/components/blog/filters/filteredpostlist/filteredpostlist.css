@@ -1,0 +1,12 @@
+.accordion-button:not(.collapsed) {
+  background-color: var(--text);
+}
+
+.accordion-button:focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.accordion-width {
+  max-width: 800px;
+}

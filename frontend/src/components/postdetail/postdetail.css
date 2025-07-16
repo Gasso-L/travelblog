@@ -1,0 +1,11 @@
+.post-detail-page {
+  max-width: 960px;
+  margin: 0 auto;
+  color: var(--text);
+  background-color: var(--surface);
+}
+
+.star-icon {
+  color: var(--star-icon);
+  font-size: 1.3em;
+}

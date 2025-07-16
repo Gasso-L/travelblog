@@ -1,0 +1,11 @@
+.contacts-page h1 {
+  color: #343a40;
+}
+
+.contacts-page .form-label {
+  font-weight: 600;
+}
+
+.contacts-page .form-control {
+  border-radius: 0.5rem;
+}

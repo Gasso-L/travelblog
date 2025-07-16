@@ -1,0 +1,101 @@
+.btn-accent {
+  background-color: var(--btn-accent-color);
+  color: var(--btn-text-dark);
+  font-weight: 600;
+  border: none;
+}
+.btn-accent:hover,
+.btn-accent:disabled {
+  background-color: var(--btn-accent-hover);
+  color: var(--btn-text-light);
+}
+
+.btn-accent:focus,
+.btn-accent:active {
+  background-color: var(--btn-accent-active-focus) !important;
+  color: var(--btn-text-light) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.btn-outline-accent {
+  background-color: transparent;
+  color: var(--btn-accent-color);
+  border: 2px solid var(--btn-accent-color);
+  font-weight: 600;
+}
+.btn-outline-accent:hover {
+  background-color: var(--btn-accent-color);
+  color: var(--btn-text-dark);
+  border: 2px solid var(--btn-accent-color) !important;
+}
+
+.btn-outline-accent:focus,
+.btn-outline-accent:active {
+  background-color: var(--btn-accent-color) !important;
+  color: var(--btn-text-dark) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.btn-ghost-accent {
+  background-color: transparent;
+  color: var(--btn-accent-color);
+  font-weight: 600;
+  border: none;
+}
+.btn-ghost-accent:hover {
+  background-color: var(--btn-ghost-bg-hover);
+}
+
+.btn-transparent {
+  background-color: transparent !important ;
+  color: var(--btn-text-light) !important;
+  border: none !important;
+}
+.btn-transparent:hover {
+  text-decoration: underline !important;
+  opacity: 0.85 !important;
+  color: var(--btn-text-light) !important;
+}
+
+.btn-danger {
+  background-color: var(--text-red);
+  color: var(--btn-text-light);
+  font-weight: 600;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #992f2f !important;
+  color: var(--btn-text-light) !important;
+}
+
+.btn-danger:focus,
+.btn-danger:active {
+  background-color: #7f2626 !important;
+  color: var(--btn-text-light) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.btn-outline-danger {
+  background-color: transparent;
+  color: var(--text-red);
+  border: 2px solid var(--text-red);
+  font-weight: 600;
+}
+
+.btn-outline-danger:hover {
+  background-color: var(--text-red);
+  color: var(--btn-text-light);
+  border: 2px solid var(--text-red) !important;
+}
+
+.btn-outline-danger:focus,
+.btn-outline-danger:active {
+  background-color: var(--text-red) !important;
+  color: var(--btn-text-light) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}

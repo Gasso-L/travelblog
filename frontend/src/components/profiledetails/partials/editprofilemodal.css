@@ -1,0 +1,11 @@
+.modal-content {
+  background-color: var(--bg);
+}
+
+.modal-title {
+  color: var(--text);
+}
+
+.form-text {
+  color: var(--text);
+}

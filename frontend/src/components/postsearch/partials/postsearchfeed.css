@@ -1,0 +1,42 @@
+.card-container {
+  max-height: 80vh;
+  overflow-y: auto;
+  background-color: var(--surface);
+}
+
+.search-feed-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+  padding: 2rem 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.search-feed-item {
+  width: 100%;
+}
+
+.scrollbar-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollbar-container::-webkit-scrollbar-track {
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+
+.scrollbar-container::-webkit-scrollbar-thumb {
+  background: #adb5bd;
+  border-radius: 4px;
+}
+
+.scrollbar-container::-webkit-scrollbar-thumb:hover {
+  background: #6c757d;
+}
+
+.scrollbar-container {
+  scrollbar-width: thin;
+  scrollbar-color: #adb5bd #f8f9fa;
+}

@@ -1,0 +1,23 @@
+.custom-card-img {
+  height: 200px !important;
+  object-fit: cover;
+}
+
+.post-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-5px);
+  border: 1px solid var(--btn-accent-color) !important;
+}
+
+.card-link-wrapper {
+  text-decoration: none;
+  color: inherit;
+}
+
+.star-icon {
+  color: var(--star-icon);
+  font-size: 1em;
+}
