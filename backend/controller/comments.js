@@ -11,10 +11,6 @@ const findAllComments = async (req, res, next) => {
 
     const result = await commentService.findAll(page, pageSize, postId);
 
-    if (!result.comments || result.comments.length === 0) {
-      throw new NoCommentsFoundException();
-    }
-
     const post = await postService.findPostById(postId);
     const postRatings = post?.ratings || [];
 
