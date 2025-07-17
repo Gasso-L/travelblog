@@ -16,9 +16,21 @@ const PORT = process.env.PORT || 9099;
 const startServer = require("../backend/config/db");
 
 const server = express();
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://travelblog-blush.vercel.app",
+];
+
 server.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
