@@ -9,30 +9,21 @@ export const CommentProvider = ({ children }) => {
   const [loadingComments, setLoadingComments] = useState(false);
   const [errorComments, setErrorComments] = useState("");
 
-  const isBackendEnabledInDev =
-    import.meta.env.VITE_USE_BACKEND_IN_DEV === "true";
-  const isProduction = import.meta.env.MODE === "production";
-  const shouldFetchFromBackend = isBackendEnabledInDev || isProduction;
-
   const getCommentsByPostId = async (postId) => {
     setLoadingComments(true);
     try {
-      let fetchedComments = [];
-      let fetchedRatings = [];
+      const res = await fetch(
+        `${import.meta.env.VITE_SERVER_BASE_URL}/comments/${postId}`
+      );
 
-      if (shouldFetchFromBackend) {
-        const res = await fetch(
-          `${import.meta.env.VITE_SERVER_BASE_URL}/comments/${postId}`
-        );
-        const result = await res.json();
-
-        fetchedComments = result.comments || [];
-        fetchedRatings = result.postRatings || [];
-      } else {
-        const post = mockPosts.find((p) => String(p._id) === postId);
-        fetchedComments = post?.comments || [];
-        fetchedRatings = post?.ratings || [];
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Failed to fetch comments");
       }
+
+      const result = await res.json();
+      const fetchedComments = result.comments || [];
+      const fetchedRatings = result.postRatings || [];
 
       setComments(fetchedComments);
       setPostRatings(fetchedRatings);
@@ -62,6 +53,7 @@ export const CommentProvider = ({ children }) => {
       const result = await res.json();
 
       setComments((prev) => [...prev, result.comment]);
+      getCommentsByPostId(postId);
       return result.comment;
     } catch (err) {
       setErrorComments(err.message);
