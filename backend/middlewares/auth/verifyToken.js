@@ -1,4 +1,4 @@
-const invalidTokenException = require("../../exceptions/auth/invalidTokenException");
+const InvalidTokenException = require("../../exceptions/auth/InvalidTokenException");
 const User = require("../../models/users");
 const jwt = require("jsonwebtoken");
 
@@ -30,7 +30,7 @@ const verifyToken = async (req, res, next) => {
   }
 
   if (!token) {
-    throw new invalidTokenException();
+    throw new InvalidTokenException();
   }
 
   try {
@@ -38,13 +38,13 @@ const verifyToken = async (req, res, next) => {
 
     const user = await User.findOne({ email: verifiedToken.email });
 
-    if (!user) throw new invalidTokenException();
+    if (!user) throw new InvalidTokenException();
 
     req.user = user;
 
     next();
   } catch (error) {
-    throw new invalidTokenException();
+    throw new InvalidTokenException();
   }
 };
 
