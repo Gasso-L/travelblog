@@ -1,6 +1,5 @@
 import SearchBar from "../searchbar/SearchBar";
-import "./HeroSection.css";
-import { Link } from "react-router-dom";
+import "./heroSection.css";
 
 const HeroSection = () => {
   return (
