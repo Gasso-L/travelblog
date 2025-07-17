@@ -13,7 +13,7 @@ const SignupForm = () => {
     email: "",
     password: "",
     avatar:
-      "https://res.cloudinary.com/dkfcilr87/image/upload/v1750707061/avatar5_gk9hpv.png",
+      "https://res.cloudinary.com/dkfcilr87/image/upload/v1752317559/avatar9_ul9bmv.png",
   });
 
   const [error, setError] = useState("");
