@@ -108,9 +108,6 @@ export const PostProvider = ({ children }) => {
   };
 
   const uploadImages = async (postId, imageFiles) => {
-    if (!shouldFetchFromBackend) {
-      return null;
-    }
     try {
       const formData = new FormData();
       imageFiles.forEach((file) => formData.append("images", file));

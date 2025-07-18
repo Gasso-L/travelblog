@@ -46,26 +46,57 @@ const CreatePostForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isFormValid) {
+      toast.warning("Please fill out all fields correctly.");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
-    const cleanContent = sanitizeContent(content);
+    toast.info("Creating post...", { autoClose: false, toastId: "creating" });
 
-    const postPayload = {
-      ...formData,
-      tags: formData.tags.split(",").map((tag) => tag.trim()),
-      content: cleanContent,
-    };
+    try {
+      const cleanContent = sanitizeContent(content);
 
-    const createdPost = await createPost(postPayload, token);
-    if (!createdPost) return setLoading(false);
+      const postPayload = {
+        ...formData,
+        tags: formData.tags.split(",").map((tag) => tag.trim()),
+        content: cleanContent,
+      };
 
-    if (images.length > 0) {
-      await uploadImages(createdPost._id, images);
+      const createdPost = await createPost(postPayload, token);
+
+      if (!createdPost || !createdPost._id) {
+        throw new Error("Post creation failed or missing _id");
+      }
+
+      toast.dismiss("creating");
+
+      if (images.length > 0) {
+        toast.info("Uploading images...", {
+          autoClose: false,
+          toastId: "uploading",
+        });
+        try {
+          const uploadResult = await uploadImages(createdPost._id, images);
+          toast.dismiss("uploading");
+        } catch (uploadErr) {
+          toast.dismiss("uploading");
+          toast.error("Image upload failed");
+        }
+      }
+
+      toast.success("Post created!");
+      navigate("/profile", { state: { refresh: true } });
+    } catch (err) {
+      toast.dismiss("creating");
+      toast.error("Something went wrong. Please try again.");
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    toast.success("Post created!");
-
-    navigate("/profile", { state: { refresh: true } });
   };
 
   const isFormValid =
@@ -97,6 +128,7 @@ const CreatePostForm = () => {
             onChange={handleChange}
             required
             isInvalid={!validateField("title", formData.title)}
+            disabled={loading}
           />
         </Form.Group>
 
@@ -108,6 +140,7 @@ const CreatePostForm = () => {
             onChange={handleChange}
             required
             isInvalid={!validateField("location", formData.location)}
+            disabled={loading}
           />
         </Form.Group>
 
@@ -118,6 +151,7 @@ const CreatePostForm = () => {
             value={formData.tags}
             onChange={handleChange}
             isInvalid={!validateField("tags", formData.tags)}
+            disabled={loading}
           />
         </Form.Group>
 
@@ -128,6 +162,7 @@ const CreatePostForm = () => {
             multiple
             accept="image/*"
             onChange={handleImageChange}
+            disabled={loading}
           />
         </Form.Group>
 
