@@ -42,9 +42,9 @@ const LoginForm = ({ onLoginComplete }) => {
         throw new Error(err.message || "Login failed");
       }
 
-      const { token, userId } = await res.json();
+      const { token, user } = await res.json();
 
-      login(token, userId);
+      login(token, user.id);
 
       setSuccess(true);
       if (onLoginComplete) {
