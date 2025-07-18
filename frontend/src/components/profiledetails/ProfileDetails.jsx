@@ -8,15 +8,15 @@ import {
   Spinner,
   Alert,
 } from "react-bootstrap";
+import { FiEye, FiPlusCircle, FiEdit } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useProfile } from "../../contexts/ProfileContext";
-import CustomButton from "../button/CustomButton";
 import EditProfileModal from "./partials/EditProfileModal";
 import DeletePostButton from "./partials/DeletePostButton";
-import "./profiledetails.css";
-import { Link } from "react-router-dom";
-import { FiEye, FiPlusCircle, FiEdit } from "react-icons/fi";
 import { useAuth } from "../../contexts/AuthContext";
+import CustomButton from "../button/CustomButton";
+import { Link } from "react-router-dom";
+import "./profiledetails.css";
 
 const ProfileDetails = () => {
   const { token } = useAuth();
@@ -85,7 +85,7 @@ const ProfileDetails = () => {
                 {userData.firstName} {userData.lastName}
               </h4>
               <h6>{userData.email}</h6>
-              <div className="d-flex justify-content-center gap-3 my-5">
+              <div className="d-flex justify-content-center gap-3 flex-wrap my-5">
                 <CustomButton
                   variant="accent"
                   onClick={() => navigate("/create-post")}
@@ -122,7 +122,7 @@ const ProfileDetails = () => {
                   <Card.Text className="text-truncate">
                     {post.location}
                   </Card.Text>
-                  <div className="d-flex justify-content-between align-items-center mt-5">
+                  <div className="d-flex d-lg-flex flex-lg-column gap-lg-3 justify-content-between align-items-center mt-5">
                     <CustomButton
                       variant="outline"
                       onClick={() => navigate(`/posts/${post._id}`)}

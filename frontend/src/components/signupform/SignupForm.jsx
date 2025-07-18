@@ -1,8 +1,9 @@
 import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
 import OAuthButtons from "../button/oauthbuttons/OAuthButtons";
-import { Link } from "react-router-dom";
+import { validateField } from "../../utility/validation";
 import CustomButton from "../button/CustomButton";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import "./signupform.css";
 
@@ -30,6 +31,15 @@ const SignupForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const invalidFields = Object.entries(formData).filter(
+      ([name, value]) => !validateField(name, value)
+    );
+
+    if (invalidFields.length > 0) {
+      setError("Please correct the highlighted fields.");
+      return;
+    }
+
     setError("");
     setSuccess(false);
 
@@ -72,16 +82,18 @@ const SignupForm = () => {
                 value={formData.firstName}
                 onChange={handleChange}
                 required
+                isInvalid={!validateField("firstName", formData.firstName)}
               />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="lastName">
-              <Form.Label>Last Name</Form.Label>
+              <Form.Label>Last Name*</Form.Label>
               <Form.Control
                 type="text"
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
+                isInvalid={!validateField("lastName", formData.lastName)}
               />
             </Form.Group>
 
@@ -93,6 +105,7 @@ const SignupForm = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                isInvalid={!validateField("email", formData.email)}
               />
             </Form.Group>
 
@@ -104,6 +117,7 @@ const SignupForm = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                isInvalid={!validateField("password", formData.password)}
               />
             </Form.Group>
 

@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
 import { Modal, Form, Spinner, Alert, Image } from "react-bootstrap";
-import CustomButton from "../../button/CustomButton";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import { useProfile } from "../../../contexts/ProfileContext";
+import { validateField } from "../../../utility/validation";
 import { useAuth } from "../../../contexts/AuthContext";
+import CustomButton from "../../button/CustomButton";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 import "./editprofilemodal.css";
 
@@ -19,12 +20,21 @@ const EditProfileModal = ({
     lastName: "",
     email: "",
     password: "",
+    bio: "",
   });
   const [preview, setPreview] = useState("");
   const [avatarFile, setAvatarFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isModified, setIsModified] = useState(false);
+
+  const isFormValid =
+    validateField("firstName", formData.firstName) &&
+    validateField("lastName", formData.lastName) &&
+    validateField("email", formData.email) &&
+    validateField("bio", formData.bio) &&
+    (formData.password.length === 0 ||
+      validateField("password", formData.password));
 
   const { userProfile } = useProfile();
   const { token } = useAuth();
@@ -42,6 +52,7 @@ const EditProfileModal = ({
         lastName: userData.lastName || "",
         email: userData.email || "",
         password: "",
+        bio: userData.bio || "",
       });
       setPreview(userData.avatar || "");
       setAvatarFile(null);
@@ -54,6 +65,7 @@ const EditProfileModal = ({
       formData.lastName !== userData?.lastName ||
       formData.email !== userData?.email ||
       formData.password.length > 0 ||
+      formData.bio !== userData?.bio ||
       avatarFile !== null;
 
     setIsModified(hasChanges);
@@ -88,6 +100,7 @@ const EditProfileModal = ({
       payload.lastName = formData.lastName;
     if (formData.email !== userData.email) payload.email = formData.email;
     if (formData.password.length > 0) payload.password = formData.password;
+    if (formData.bio !== userData.bio) payload.bio = formData.bio;
 
     try {
       if (Object.keys(payload).length > 0) {
@@ -166,6 +179,7 @@ const EditProfileModal = ({
               value={formData.firstName}
               onChange={handleChange}
               required
+              isInvalid={!validateField("firstName", formData.firstName)}
             />
           </Form.Group>
           <Form.Group className="mb-3">
@@ -175,6 +189,7 @@ const EditProfileModal = ({
               value={formData.lastName}
               onChange={handleChange}
               required
+              isInvalid={!validateField("lastName", formData.lastName)}
             />
           </Form.Group>
           <Form.Group className="mb-4">
@@ -184,6 +199,20 @@ const EditProfileModal = ({
               type="email"
               value={formData.email}
               onChange={handleChange}
+              isInvalid={!validateField("email", formData.email)}
+              required
+            />
+          </Form.Group>
+          <Form.Group className="mb-4">
+            <Form.Label>Bio</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={3}
+              name="bio"
+              value={formData.bio}
+              onChange={handleChange}
+              placeholder="Tell us something about yourself..."
+              isInvalid={!validateField("bio", formData.bio)}
               required
             />
           </Form.Group>
@@ -197,6 +226,7 @@ const EditProfileModal = ({
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Leave blank to keep current password"
+                isInvalid={!validateField("password", formData.password)}
               />
             </Form.Group>
           )}
@@ -214,7 +244,7 @@ const EditProfileModal = ({
             <CustomButton
               type="submit"
               variant="accent"
-              disabled={loading || !isModified}
+              disabled={loading || !isModified || !isFormValid}
             >
               {loading ? (
                 <Spinner animation="border" size="sm" variant="light" />

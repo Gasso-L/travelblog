@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { sanitizeContent } from "../../utility/sanitizeContent";
 import { Form, Card, Alert, Spinner } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { validateField } from "../../utility/validation";
 import { usePosts } from "../../contexts/PostContext";
 import { useAuth } from "../../contexts/AuthContext";
-import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
-import { sanitizeContent } from "../../utility/sanitizeContent";
-import "./createpost.css";
 import CustomButton from "../button/CustomButton";
+import { useNavigate } from "react-router-dom";
+import "react-quill-new/dist/quill.snow.css";
+import ReactQuill from "react-quill-new";
 import { toast } from "react-toastify";
+import { useState } from "react";
+import "./createpost.css";
 
 const CreatePostForm = () => {
   const { createPost, uploadImages, error, setError } = usePosts();
@@ -22,6 +23,17 @@ const CreatePostForm = () => {
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([]);
   const navigate = useNavigate();
+
+  const getTextFromHTML = (html) => {
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent || tempDiv.innerText || "";
+  };
+
+  const isContentValid = () => {
+    const text = getTextFromHTML(content);
+    return text.trim().length >= 2 && text.trim().length <= 5000;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,6 +68,12 @@ const CreatePostForm = () => {
     navigate("/profile", { state: { refresh: true } });
   };
 
+  const isFormValid =
+    validateField("title", formData.title) &&
+    validateField("location", formData.location) &&
+    validateField("tags", formData.tags) &&
+    isContentValid();
+
   const modules = {
     toolbar: [
       [{ header: [1, 2, false] }],
@@ -78,6 +96,7 @@ const CreatePostForm = () => {
             value={formData.title}
             onChange={handleChange}
             required
+            isInvalid={!validateField("title", formData.title)}
           />
         </Form.Group>
 
@@ -88,6 +107,7 @@ const CreatePostForm = () => {
             value={formData.location}
             onChange={handleChange}
             required
+            isInvalid={!validateField("location", formData.location)}
           />
         </Form.Group>
 
@@ -97,6 +117,7 @@ const CreatePostForm = () => {
             name="tags"
             value={formData.tags}
             onChange={handleChange}
+            isInvalid={!validateField("tags", formData.tags)}
           />
         </Form.Group>
 
@@ -112,22 +133,30 @@ const CreatePostForm = () => {
 
         <Form.Group className="mb-5 py-3">
           <Form.Label>Content</Form.Label>
-          <ReactQuill
-            theme="snow"
-            value={content}
-            onChange={setContent}
-            modules={modules}
-            formats={formats}
-            placeholder="Write your post here..."
-            className="quill-editor"
-          />
+          <div
+            className={`quill-editor ${!isContentValid() ? "is-invalid" : ""}`}
+          >
+            <ReactQuill
+              theme="snow"
+              value={content}
+              onChange={setContent}
+              modules={modules}
+              formats={formats}
+              placeholder="Write your post here..."
+            />
+          </div>
         </Form.Group>
+
         <div className="d-flex justify-content-end align-items-center mt-5 gap-2">
           <CustomButton variant="outline" onClick={() => navigate(-1)}>
             Go Back
           </CustomButton>
 
-          <CustomButton type="submit" variant="accent" disabled={loading}>
+          <CustomButton
+            type="submit"
+            variant="accent"
+            disabled={loading || !isFormValid}
+          >
             {loading ? (
               <Spinner size="sm" animation="border" variant="warning" />
             ) : (

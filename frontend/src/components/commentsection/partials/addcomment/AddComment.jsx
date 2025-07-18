@@ -1,4 +1,5 @@
 import { useComments } from "../../../../contexts/CommentContext";
+import { validateField } from "../../../../utility/validation";
 import { useAuth } from "../../../../contexts/AuthContext";
 import CustomButton from "../../../button/CustomButton";
 import { Form, Button } from "react-bootstrap";
@@ -16,8 +17,7 @@ const AddComment = ({ postId, onCommentAdded }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!content.trim()) return toast.warning("Comment cannot be empty");
-    if (content.length < 5 || content.length > 1000) {
+    if (!validateField("comment", content)) {
       return toast.warning("Comment must be between 5 and 1000 characters");
     }
 
@@ -40,6 +40,8 @@ const AddComment = ({ postId, onCommentAdded }) => {
     }
   };
 
+  const isCommentValid = validateField("comment", content);
+
   return (
     <Form onSubmit={handleSubmit} className="mb-4">
       <Form.Group controlId="commentContent">
@@ -50,6 +52,7 @@ const AddComment = ({ postId, onCommentAdded }) => {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Write your thoughts..."
+          isInvalid={!isCommentValid}
         />
       </Form.Group>
       {!hasCommented && (
@@ -77,7 +80,11 @@ const AddComment = ({ postId, onCommentAdded }) => {
       )}
 
       <div className="d-flex justify-content-end mt-2">
-        <CustomButton type="submit" variant="accent" disabled={loading}>
+        <CustomButton
+          type="submit"
+          variant="accent"
+          disabled={loading || !isCommentValid}
+        >
           {loading ? "Posting..." : "Post Comment"}
         </CustomButton>
       </div>
