@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+} from "react";
 
 const PostContext = createContext();
 export const usePosts = () => useContext(PostContext);
@@ -9,7 +15,7 @@ export const PostProvider = ({ children }) => {
   const [error, setError] = useState("");
   const [searchResults, setSearchResults] = useState([]);
 
-  const getAllPosts = async () => {
+  const getAllPosts = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch(`${import.meta.env.VITE_SERVER_BASE_URL}/posts`);
@@ -30,7 +36,7 @@ export const PostProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const searchPosts = async (query) => {
     setLoading(true);
@@ -63,7 +69,7 @@ export const PostProvider = ({ children }) => {
     }
   };
 
-  const getPostById = async (id) => {
+  const getPostById = useCallback(async (id) => {
     setLoading(true);
     try {
       const url = `${import.meta.env.VITE_SERVER_BASE_URL}/posts/${id}`;
@@ -82,7 +88,7 @@ export const PostProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const createPost = async (postData) => {
     try {
@@ -133,9 +139,32 @@ export const PostProvider = ({ children }) => {
     }
   };
 
+  const updatePost = async (postId, postData, token) => {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_SERVER_BASE_URL}/posts/${postId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: token,
+          },
+          body: JSON.stringify(postData),
+        }
+      );
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || "Failed to update post");
+      return result.post;
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  };
+
   useEffect(() => {
     getAllPosts();
-  }, []);
+  }, [getAllPosts]);
 
   return (
     <PostContext.Provider
@@ -149,6 +178,7 @@ export const PostProvider = ({ children }) => {
         getPostById,
         createPost,
         uploadImages,
+        updatePost,
         setError,
       }}
     >

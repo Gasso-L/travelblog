@@ -1,25 +1,27 @@
 import { Container, Row, Col, Badge, Spinner, Alert } from "react-bootstrap";
 import AddComment from "../commentsection/partials/addcomment/AddComment";
+import EditPostModal from "./partials/editpostmodal/EditPostModal";
 import PostAuthor from "../blog/partials/postauthor/PostAuthor";
 import CommentSection from "../commentsection/CommentSection";
 import PostGallery from "./partials/postgallery/PostGallery";
-import { usePosts } from "../../contexts/PostContext";
 import { useNavigate, useParams } from "react-router-dom";
+import { usePosts } from "../../contexts/PostContext";
+import { useAuth } from "../../contexts/AuthContext";
+import { Link, Navigate } from "react-router-dom";
+import CustomButton from "../button/CustomButton";
 import { useState, useEffect } from "react";
 import { FaStar } from "react-icons/fa";
-import { Link, Navigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
-import CustomButton from "../button/CustomButton";
 
 import "./postdetail.css";
 
 const PostDetail = () => {
   const { id } = useParams();
-  const { getPostById } = usePosts();
+  const { getPostById, updatePost, uploadImages } = usePosts();
   const [post, setPost] = useState(null);
   const [localError, setLocalError] = useState("");
   const [loading, setLoading] = useState(true);
-  const { userId } = useAuth();
+  const [showEditModal, setShowEditModal] = useState(false);
+  const { userId, token } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -40,7 +42,7 @@ const PostDetail = () => {
       }
     };
     getPost();
-  }, [id]);
+  }, [id, getPostById]);
 
   if (loading) {
     return (
@@ -91,8 +93,40 @@ const PostDetail = () => {
     }
   };
 
+  const handlePostUpdated = async (updatedFields, newImages = []) => {
+    try {
+      if (Object.keys(updatedFields).length > 0) {
+        await updatePost(id, updatedFields, token);
+      }
+
+      if (newImages.length > 0) {
+        await uploadImages(id, newImages, token);
+      }
+      const refreshedPost = await getPostById(id);
+      if (refreshedPost) {
+        setPost(refreshedPost);
+      }
+      setShowEditModal(false);
+    } catch (err) {
+      console.error("Failed to update post:", err);
+    }
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+  };
+
   return (
     <Container className="post-detail-page rounded-5 p-4 mb-5">
+      {}
+      {showEditModal && (
+        <EditPostModal
+          show={showEditModal}
+          handleClose={handleCloseEditModal}
+          postData={post}
+          onPostUpdated={handlePostUpdated}
+        />
+      )}
       <PostGallery images={images} />
 
       <div className="text-center my-4">
@@ -127,7 +161,17 @@ const PostDetail = () => {
               <PostAuthor {...author} />
             </Link>
           </div>
-
+          {isAuthor && (
+            <div className="d-flex justify-content-center pt-5">
+              <CustomButton
+                variant="accent"
+                onClick={() => setShowEditModal(true)}
+                className="edit-post-button"
+              >
+                Edit Post
+              </CustomButton>
+            </div>
+          )}
           <div className="mt-5">
             {!userId ? (
               <Alert
