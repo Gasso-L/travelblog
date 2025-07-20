@@ -26,7 +26,7 @@ const findAllByUser = async (userId, page, pageSize) => {
     .limit(pageSize)
     .skip((page - 1) * pageSize)
     .populate("comments", "feedback")
-    .populate("author", "firstName userName")
+    .populate("author", "firstName userName email avatar")
     .sort({ createdAt: -1 });
 
   const totalPosts = await Post.countDocuments({ author: userId });

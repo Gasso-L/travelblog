@@ -113,7 +113,7 @@ const PublicProfileDetails = () => {
         </Col>
       </Row>
 
-      <div className="mt-5">
+      <div className="my-5">
         <h2 className="text-center mb-4 fade-in">
           {publicUserData.userName}'s Posts
         </h2>
