@@ -50,8 +50,8 @@ const updateUserAvatar = async (id, avatar) => {
   return User.findByIdAndUpdate(id, { avatar }, options);
 };
 
-const findOne = async (filter) => {
-  return User.findOne(filter);
+const findById = async (id) => {
+  return User.findById(id);
 };
 
 module.exports = {
@@ -60,5 +60,5 @@ module.exports = {
   updateUser,
   deleteUser,
   updateUserAvatar,
-  findOne,
+  findById,
 };

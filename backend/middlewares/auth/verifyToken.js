@@ -9,11 +9,13 @@ const verifyToken = async (req, res, next) => {
     { method: "POST", path: "/login" },
     { method: "POST", path: "/users" },
     { method: "GET", startsWith: "/users" },
+    { method: "GET", startsWith: "/users/" },
     { method: "GET", startsWith: "/posts" },
     { method: "GET", startsWith: "/comments" },
     { method: "GET", startsWith: "/github" },
     { method: "GET", startsWith: "/google" },
     { method: "GET", startsWith: "/success" },
+    { method: "GET", startsWith: "/debug-user" },
   ];
 
   const isOpenRoute = openRoutes.some((route) => {

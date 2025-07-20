@@ -14,13 +14,38 @@ export const AuthProvider = ({ children }) => {
 
   const isAuthenticated = !!token;
 
+  const clearAuthData = () => {
+    setToken(null);
+    setUserId(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+  };
+
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     const storedUserId = localStorage.getItem("userId");
 
     if (storedToken && storedUserId) {
-      setToken(storedToken);
-      setUserId(storedUserId);
+      try {
+        const decodedToken = parseJwt(storedToken);
+        const expirationTime = decodedToken.exp * 1000;
+        const currentTime = Date.now();
+
+        if (expirationTime < currentTime) {
+          clearAuthData();
+          toast.error(
+            "La tua sessione è scaduta. Effettua nuovamente il login."
+          );
+          navigate("/");
+        } else {
+          setToken(storedToken);
+          setUserId(storedUserId);
+        }
+      } catch (error) {
+        clearAuthData();
+        toast.error("Token non valido. Effettua nuovamente il login.");
+        navigate("/login");
+      }
     }
   }, []);
 

@@ -119,8 +119,13 @@ const PostDetail = () => {
             dangerouslySetInnerHTML={{ __html: content }}
           ></div>
 
-          <div className="mt-5">
-            <PostAuthor {...author} />
+          <div className="mt-5 author-link-container">
+            <Link
+              to={`/profile/${author._id}`}
+              className="text-decoration-none"
+            >
+              <PostAuthor {...author} />
+            </Link>
           </div>
 
           <div className="mt-5">

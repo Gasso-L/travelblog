@@ -3,6 +3,7 @@ export const validateField = (name, value) => {
   switch (name) {
     case "firstName":
     case "lastName":
+    case "userName":
       return (
         typeof value === "string" &&
         value.trim().length >= 2 &&

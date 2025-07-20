@@ -33,8 +33,7 @@ const findAllUsers = async (req, res, next) => {
 const findUserById = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    const user = await usersService.findOne(id);
+    const user = await usersService.findById(id);
 
     if (!user) {
       throw new InvalidUserIdException();

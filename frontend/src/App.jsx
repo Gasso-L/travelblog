@@ -13,6 +13,7 @@ import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import CreatePostPage from "./pages/CreatePostPage";
 import ContactPage from "./pages/ContactPage";
+import PublicProfilePage from "./pages/PublicProfilePage";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/search" element={<PostSearchPage />} />
             <Route path="/success" element={<SuccessRedirectPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/profile/:id" element={<PublicProfilePage />} />
             <Route path="/create-post" element={<CreatePostPage />} />
             <Route path="/contacts" element={<ContactPage />} />
             <Route path="*" element={<NotFoundPage />} />

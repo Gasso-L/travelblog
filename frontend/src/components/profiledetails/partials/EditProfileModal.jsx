@@ -18,6 +18,7 @@ const EditProfileModal = ({
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    userName: "",
     email: "",
     password: "",
     bio: "",
@@ -31,6 +32,7 @@ const EditProfileModal = ({
   const isFormValid =
     validateField("firstName", formData.firstName) &&
     validateField("lastName", formData.lastName) &&
+    validateField("userName", formData.userName) &&
     validateField("email", formData.email) &&
     validateField("bio", formData.bio) &&
     (formData.password.length === 0 ||
@@ -50,6 +52,7 @@ const EditProfileModal = ({
       setFormData({
         firstName: userData.firstName || "",
         lastName: userData.lastName || "",
+        userName: userData.userName || "",
         email: userData.email || "",
         password: "",
         bio: userData.bio || "",
@@ -62,7 +65,8 @@ const EditProfileModal = ({
   useEffect(() => {
     const hasChanges =
       formData.firstName !== userData?.firstName ||
-      formData.lastName !== userData?.lastName ||
+      (formData.lastName !== userData?.lastName) |
+        (formData.userName !== (userData?.userName || "")) ||
       formData.email !== userData?.email ||
       formData.password.length > 0 ||
       formData.bio !== userData?.bio ||
@@ -98,6 +102,8 @@ const EditProfileModal = ({
       payload.firstName = formData.firstName;
     if (formData.lastName !== userData.lastName)
       payload.lastName = formData.lastName;
+    if (formData.userName !== (userData.userName || ""))
+      payload.userName = formData.userName;
     if (formData.email !== userData.email) payload.email = formData.email;
     if (formData.password.length > 0) payload.password = formData.password;
     if (formData.bio !== userData.bio) payload.bio = formData.bio;
@@ -190,6 +196,16 @@ const EditProfileModal = ({
               onChange={handleChange}
               required
               isInvalid={!validateField("lastName", formData.lastName)}
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>Username</Form.Label>
+            <Form.Control
+              name="userName"
+              value={formData.userName}
+              onChange={handleChange}
+              required
+              isInvalid={!validateField("userName", formData.userName)}
             />
           </Form.Group>
           <Form.Group className="mb-4">

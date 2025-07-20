@@ -43,7 +43,6 @@ const LoginForm = ({ onLoginComplete }) => {
       }
 
       const { token, user } = await res.json();
-      console.log("User from backend:", user);
       login(token, user._id);
 
       setSuccess(true);
