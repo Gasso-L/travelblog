@@ -2,9 +2,9 @@ import { sanitizeContent } from "../../../../utility/sanitizeContent";
 import { validateField } from "../../../../utility/validation";
 import { Modal, Form, Spinner, Alert } from "react-bootstrap";
 import CustomButton from "../../../button/CustomButton";
-import "react-quill-new/dist/quill.snow.css";
-import { useState, useEffect } from "react";
 import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import "./editpostmodal.css";
 
@@ -20,33 +20,54 @@ const EditPostModal = ({ show, handleClose, postData, onPostUpdated }) => {
   const [currentImages, setCurrentImages] = useState([]);
   const [error, setError] = useState("");
   const [isModified, setIsModified] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const initialValuesRef = useRef(null);
 
   useEffect(() => {
     if (postData) {
+      const initialTags = postData.tags ? postData.tags.join(", ") : "";
+
+      initialValuesRef.current = {
+        title: postData.title || "",
+        location: postData.location || "",
+        tags: initialTags,
+        content: postData.content || "",
+      };
+
       setFormData({
         title: postData.title || "",
         location: postData.location || "",
-        tags: postData.tags ? postData.tags.join(", ") : "",
+        tags: initialTags,
       });
       setContent(postData.content || "");
       setCurrentImages(postData.images || []);
       setNewImages([]);
       setIsModified(false);
       setError("");
+      setIsInitialized(true);
     }
   }, [postData, show]);
 
   useEffect(() => {
-    const initialTags = postData.tags ? postData.tags.join(", ") : "";
+    if (!isInitialized || !initialValuesRef.current) return;
+    const sanitize = (html) => sanitizeContent(html).trim();
+
+    const {
+      title,
+      location,
+      tags,
+      content: initialContent,
+    } = initialValuesRef.current;
+
     const hasChanges =
-      formData.title !== (postData?.title || "") ||
-      formData.location !== (postData?.location || "") ||
-      formData.tags !== initialTags ||
-      content !== (postData?.content || "") ||
+      formData.title !== title ||
+      formData.location !== location ||
+      formData.tags !== tags ||
+      sanitize(content) !== sanitize(initialContent) ||
       newImages.length > 0;
 
     setIsModified(hasChanges);
-  }, [formData, content, newImages, postData]);
+  }, [formData, content, newImages, isInitialized]);
 
   const getTextFromHTML = (html) => {
     const tempDiv = document.createElement("div");
@@ -266,7 +287,7 @@ const EditPostModal = ({ show, handleClose, postData, onPostUpdated }) => {
               disabled={loading || !isModified || !isFormValid}
             >
               {loading ? (
-                <Spinner size="sm" animation="border" variant="light" />
+                <Spinner size="sm" animation="border" variant="warning" />
               ) : (
                 "Save Changes"
               )}
