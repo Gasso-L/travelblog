@@ -19,6 +19,7 @@ const authGoogle = async (req, res, next) => {
     }/success?token=${encodeURIComponent(token)}`;
     res.redirect(redirectUrl);
   } catch (e) {
+    console.error("ERRORE NEL CONTROLLER OAUTH:", e);
     next(e);
   }
 };

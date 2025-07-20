@@ -54,6 +54,10 @@ const findById = async (id) => {
   return User.findById(id);
 };
 
+const findOne = async (filter) => {
+  return User.findOne(filter);
+};
+
 module.exports = {
   findAllUsers,
   createUser,
@@ -61,4 +65,5 @@ module.exports = {
   deleteUser,
   updateUserAvatar,
   findById,
+  findOne,
 };
