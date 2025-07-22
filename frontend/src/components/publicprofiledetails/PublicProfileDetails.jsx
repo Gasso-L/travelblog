@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import { Container, Row, Col, Spinner, Alert, Card } from "react-bootstrap";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useProfile } from "../../contexts/ProfileContext";
 import PostCard from "../blog/partials/postcard/PostCard";
-import { Container, Row, Col, Spinner, Alert, Card } from "react-bootstrap";
 import "./publicprofiledetails.css";
+import { useEffect } from "react";
 
 const PublicProfileDetails = () => {
   const { id } = useParams();

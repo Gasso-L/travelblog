@@ -2,9 +2,9 @@ import { sanitizeContent } from "../../../../utility/sanitizeContent";
 import { validateField } from "../../../../utility/validation";
 import { Modal, Form, Spinner, Alert } from "react-bootstrap";
 import CustomButton from "../../../button/CustomButton";
-import ReactQuill from "react-quill-new";
-import "react-quill-new/dist/quill.snow.css";
 import { useState, useEffect, useRef } from "react";
+import "react-quill-new/dist/quill.snow.css";
+import ReactQuill from "react-quill-new";
 import { toast } from "react-toastify";
 import "./editpostmodal.css";
 

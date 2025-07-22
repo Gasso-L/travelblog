@@ -21,3 +21,12 @@
   color: var(--star-icon);
   font-size: 1em;
 }
+
+.post-card .badge {
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle;
+}

@@ -5,13 +5,15 @@ import { Container, Spinner, Alert } from "react-bootstrap";
 import { usePosts } from "../../contexts/PostContext";
 import PostCard from "./partials/postcard/PostCard";
 import { Swiper, SwiperSlide } from "swiper/react";
+import CustomButton from "../button/CustomButton";
 import { Navigation } from "swiper/modules";
 import TagFilter from "./filters/TagFilter";
+import { Link } from "react-router-dom";
+import "./homepagepostssection.css";
 import "swiper/css/navigation";
-import "./allposts.css";
 import "swiper/css";
 
-const AllPosts = () => {
+const HomepagePostsSection = () => {
   const { posts, loading, error, getAllPosts } = usePosts();
 
   useRefreshOnRouteEnter("/", () => {
@@ -48,13 +50,20 @@ const AllPosts = () => {
               }}
               className="py-3"
             >
-              {posts.map((post) => (
-                <SwiperSlide key={post._id}>
-                  <PostCard post={post} />
-                </SwiperSlide>
-              ))}
-
+              {[...posts]
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 10)
+                .map((post) => (
+                  <SwiperSlide key={post._id}>
+                    <PostCard post={post} />
+                  </SwiperSlide>
+                ))}
               <SwiperNavControls />
+              <div className="text-center pt-3">
+                <CustomButton variant="outline" as={Link} to="/all-posts">
+                  View All Posts
+                </CustomButton>
+              </div>
             </Swiper>
           )}
         </Container>
@@ -101,4 +110,4 @@ const AllPosts = () => {
   );
 };
 
-export default AllPosts;
+export default HomepagePostsSection;

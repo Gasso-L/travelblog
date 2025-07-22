@@ -68,7 +68,7 @@ const SignupForm = () => {
         <Col md={6}>
           <h2 className="mb-5 fw-bold">Sign Up</h2>
 
-          {success && <Alert variant="success">Account created! ✅</Alert>}
+          {success && <Alert variant="success">Account created!</Alert>}
           {error && <Alert variant="danger">{error}</Alert>}
           <OAuthButtons />
           <hr className="my-3" />

@@ -54,12 +54,6 @@ const createUser = async (req, res, next) => {
 
     const savedUser = await usersService.createUser(body);
 
-    /*     await email.send(
-      body.email,
-      "Registrazione Completata",
-      "Ciao, grazie per esserti registrato al nostro sito!"
-    ); */
-
     res.status(201).send({
       statusCode: 201,
       message: "User Created",

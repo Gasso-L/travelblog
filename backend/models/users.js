@@ -72,7 +72,7 @@ UsersSchema.pre("save", async function (next) {
 
   if (!user.userName) {
     const baseUserName = `${user.firstName.toLowerCase()}${user.lastName.toLowerCase()}`;
-    const randomSuffix = Math.floor(100 + Math.random() * 900); // numero tra 100–999
+    const randomSuffix = Math.floor(100 + Math.random() * 900);
     user.userName = `${baseUserName}${randomSuffix}`;
   }
 

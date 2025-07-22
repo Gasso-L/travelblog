@@ -14,7 +14,6 @@ const cloudPostStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "CoverTravelPosts",
-    /* format: async (req, file) => "png", */
     public_id: (req, file) => {
       const baseName = file.originalname
         ? file.originalname

@@ -1,9 +1,7 @@
-/* Contenitore generico */
 .top-rated-section {
   padding: 2rem 0;
 }
 
-/* Titolo se lo usi */
 .top-rated-title {
   font-size: 1.8rem;
   font-weight: 600;
@@ -11,7 +9,6 @@
   text-align: center;
 }
 
-/* Swiper (versione mobile) */
 .swiper {
   padding: 1rem 0;
 }
@@ -21,7 +18,6 @@
   justify-content: center;
 }
 
-/* Card grande (usata nel primo slot desktop) */
 .top-post-large {
   height: 100%;
   display: flex;
@@ -29,7 +25,6 @@
   justify-content: space-between;
 }
 
-/* Responsive tweaks */
 @media (max-width: 768px) {
   .top-rated-title {
     font-size: 1.4rem;

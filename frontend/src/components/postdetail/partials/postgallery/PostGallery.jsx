@@ -1,4 +1,5 @@
 import { Carousel } from "react-bootstrap";
+import "./postgallery.css";
 
 const PostGallery = ({ images }) => {
   if (!images?.length) return null;
@@ -10,7 +11,7 @@ const PostGallery = ({ images }) => {
           <img
             src={src}
             alt={`Image ${i}`}
-            className="d-block w-100 object-fit-cover"
+            className="d-block w-100 carousel-img"
             style={{ maxHeight: "500px" }}
           />
         </Carousel.Item>
