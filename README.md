@@ -20,7 +20,7 @@ Tripspire is a vibrant online platform designed to connect travel enthusiasts, i
 
 To start exploring and sharing on tripspire:
 
-    Visit the Website: Navigate to https://travelblog-blush.vercel.app/profile.
+    Visit the Website: Navigate to https://travelblog-blush.vercel.app
 
     Create Your Profile: Sign up to create your personalized traveler profile.
 
