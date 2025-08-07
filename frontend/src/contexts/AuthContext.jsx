@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const handleLogout = (customMessage = null) => {
-    if (customMessage) {
+    if (typeof customMessage === "string" && customMessage.trim() !== "") {
       toast.info(customMessage);
     } else {
       toast(
