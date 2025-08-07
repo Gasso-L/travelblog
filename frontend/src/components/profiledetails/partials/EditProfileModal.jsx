@@ -153,6 +153,7 @@ const EditProfileModal = ({
       onHide={handleClose}
       centered
       dialogClassName="edit-profile-modal"
+      size="lg"
     >
       <Modal.Header closeButton className="border-0">
         <Modal.Title className="fw-bold">Edit Profile</Modal.Title>
@@ -208,7 +209,7 @@ const EditProfileModal = ({
               isInvalid={!validateField("userName", formData.userName)}
             />
           </Form.Group>
-          <Form.Group className="mb-4">
+          {/* <Form.Group className="mb-4">
             <Form.Label>Email</Form.Label>
             <Form.Control
               name="email"
@@ -218,7 +219,7 @@ const EditProfileModal = ({
               isInvalid={!validateField("email", formData.email)}
               required
             />
-          </Form.Group>
+          </Form.Group> */}
           <Form.Group className="mb-4">
             <Form.Label>Bio</Form.Label>
             <Form.Control

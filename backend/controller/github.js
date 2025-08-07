@@ -24,6 +24,7 @@ const manageOauthCallback = async (req, res, next) => {
       avatar:
         user.avatar ||
         "https://res.cloudinary.com/dkfcilr87/image/upload/v1752317559/avatar9_ul9bmv.png",
+      authProvider: user.authProvider,
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET);

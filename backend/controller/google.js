@@ -12,6 +12,7 @@ const authGoogle = async (req, res, next) => {
       avatar:
         user.avatar ||
         "https://res.cloudinary.com/dkfcilr87/image/upload/v1752317559/avatar9_ul9bmv.png",
+      authProvider: user.authProvider,
     };
     const token = jwt.sign(payload, process.env.JWT_SECRET);
     const redirectUrl = `${
@@ -19,7 +20,6 @@ const authGoogle = async (req, res, next) => {
     }/success?token=${encodeURIComponent(token)}`;
     res.redirect(redirectUrl);
   } catch (e) {
-    console.error("ERRORE NEL CONTROLLER OAUTH:", e);
     next(e);
   }
 };

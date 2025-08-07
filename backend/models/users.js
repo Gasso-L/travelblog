@@ -42,7 +42,10 @@ const UsersSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return this.authProvider === "local";
+      },
+
       min: 12,
       select: false,
     },
@@ -53,6 +56,12 @@ const UsersSchema = new mongoose.Schema(
       required: false,
     },
     posts: [{ type: mongoose.Schema.Types.ObjectId, ref: "post" }],
+    authProvider: {
+      type: String,
+      enum: ["local", "google", "github"],
+      default: "local",
+      required: true,
+    },
   },
   { timestamps: true, strict: true }
 );
@@ -68,6 +77,10 @@ UsersSchema.pre("save", async function (next) {
 
   if (!user.isModified()) {
     return next;
+  }
+
+  if (user.authProvider !== "local") {
+    return next();
   }
 
   if (!user.userName) {

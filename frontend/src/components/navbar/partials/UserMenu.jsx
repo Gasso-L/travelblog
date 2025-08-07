@@ -50,7 +50,7 @@ const UserMenu = () => {
           className="dropdown-item user-menu-link d-flex align-items-center gap-2"
         >
           <FiSettings />
-          My Account
+          Account
         </Link>
         <Dropdown.Divider />
         <Dropdown.Item

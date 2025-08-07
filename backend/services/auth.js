@@ -37,6 +37,7 @@ const login = async (email, password) => {
       id: user._id,
       firstName: user.firstName,
       email: user.email,
+      authProvider: user.authProvider,
     },
   };
 };

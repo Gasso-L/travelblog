@@ -162,6 +162,8 @@ const EditPostModal = ({ show, handleClose, postData, onPostUpdated }) => {
       onHide={handleClose}
       centered
       dialogClassName="edit-post-modal"
+      animation
+      size="lg"
     >
       <Modal.Header closeButton className="border-0">
         <Modal.Title className="fw-bold">Edit Post</Modal.Title>

@@ -120,7 +120,7 @@ const CustomNavBar = () => {
                       onClick={() => handleNavigate("/profile")}
                     >
                       <FiSettings />
-                      My Account
+                      Account
                     </Button>
                     <Button
                       variant="link"

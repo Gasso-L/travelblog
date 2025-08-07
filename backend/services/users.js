@@ -29,6 +29,7 @@ const createUser = async (user) => {
     avatar: user.avatar,
     password: user.password,
     bio: user.bio,
+    authProvider: user.authProvider || "local",
   });
 
   const savedUser = await newUser.save();

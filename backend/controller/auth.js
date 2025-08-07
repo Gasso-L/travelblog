@@ -20,6 +20,7 @@ const login = async (req, res, next) => {
           lastName: user.lastName,
           avatar: user.avatar,
           email: user.email,
+          authProvider: user.authProvider,
         },
       });
   } catch (error) {
