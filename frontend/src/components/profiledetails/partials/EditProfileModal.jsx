@@ -39,13 +39,10 @@ const EditProfileModal = ({
       validateField("password", formData.password));
 
   const { userProfile } = useProfile();
-  const { token } = useAuth();
+  const { token, handleLogout } = useAuth();
   const navigate = useNavigate();
 
-  const email = userData?.email || "";
-  const isSocialUser =
-    email.includes("@gmail.com") || email.includes("github.local");
-  const isLocalUser = !isSocialUser;
+  const isLocalUser = userData?.authProvider === "local";
 
   useEffect(() => {
     if (userData) {
@@ -111,6 +108,11 @@ const EditProfileModal = ({
     try {
       if (Object.keys(payload).length > 0) {
         await onProfileUpdated(payload);
+      }
+
+      if (payload.email || payload.password) {
+        handleLogout("Email or password changed. Please log in again.");
+        return;
       }
 
       if (avatarFile) {
@@ -209,17 +211,19 @@ const EditProfileModal = ({
               isInvalid={!validateField("userName", formData.userName)}
             />
           </Form.Group>
-          {/* <Form.Group className="mb-4">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              isInvalid={!validateField("email", formData.email)}
-              required
-            />
-          </Form.Group> */}
+          {isLocalUser && (
+            <Form.Group className="mb-4">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                isInvalid={!validateField("email", formData.email)}
+                required
+              />
+            </Form.Group>
+          )}
           <Form.Group className="mb-4">
             <Form.Label>Bio</Form.Label>
             <Form.Control

@@ -86,17 +86,22 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("userId");
   };
 
-  const handleLogout = () => {
-    toast(
-      <div className="d-flex align-items-center gap-3">
-        <FiSmile size={20} />
-        <span className="fs-5">Goodbye, see you soon!</span>
-      </div>,
-      {
-        className: "toast-dark",
-        icon: false,
-      }
-    );
+  const handleLogout = (customMessage = null) => {
+    if (customMessage) {
+      toast.info(customMessage);
+    } else {
+      toast(
+        <div className="d-flex align-items-center gap-3">
+          <FiSmile size={20} />
+          <span className="fs-5">Goodbye, see you soon!</span>
+        </div>,
+        {
+          className: "toast-dark",
+          icon: false,
+        }
+      );
+    }
+
     setTimeout(() => {
       logout();
       navigate("/");
