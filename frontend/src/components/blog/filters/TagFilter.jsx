@@ -25,28 +25,30 @@ const TagFilter = ({ posts }) => {
     <section className="mb-5">
       <h2 className="m-4 text-center">Find Your Perfect Experience</h2>
       <Container className="py-4">
-        <Row className="pb-4">
-          <Col className="d-flex justify-content-center align-items-center gap-2">
+        <Row className="mb-3">
+          <Col className="d-flex flex-wrap justify-content-center align-items-center gap-2">
             {firstRowTags.map((tag) => (
               <CustomButton
                 key={tag}
                 variant={selectedTag === tag ? "accent" : "outline"}
                 onClick={() => toggleTag(tag)}
                 className="tag-button"
+                title={tag}
               >
                 #{tag}
               </CustomButton>
             ))}
           </Col>
         </Row>
-        <Row>
-          <Col className="d-flex justify-content-center align-items-center gap-2">
+        <Row className="mt-3">
+          <Col className="d-flex flex-wrap justify-content-center align-items-center gap-2">
             {secondRowTags.map((tag) => (
               <CustomButton
                 key={tag}
                 variant={selectedTag === tag ? "accent" : "outline"}
                 onClick={() => toggleTag(tag)}
                 className="tag-button"
+                title={tag}
               >
                 #{tag}
               </CustomButton>
