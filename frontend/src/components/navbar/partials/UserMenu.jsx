@@ -24,7 +24,7 @@ const UserMenu = () => {
       <Dropdown.Toggle variant="link" className="no-caret p-0 border-0">
         <div className="d-flex align-items-center gap-2">
           {userData && (
-            <div className="dropdown-username">
+            <div className="dropdown-username d-none d-md-flex">
               {userData.firstName || userData.userName}
             </div>
           )}
