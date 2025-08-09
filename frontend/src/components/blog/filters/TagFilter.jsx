@@ -1,6 +1,7 @@
 import FilteredPostList from "./filteredpostlist/FilteredPostList";
 import { Col, Container, Row } from "react-bootstrap";
 import CustomButton from "../../button/CustomButton";
+import "./tagfilter.css";
 import { useState } from "react";
 
 const TagFilter = ({ posts }) => {
@@ -31,6 +32,7 @@ const TagFilter = ({ posts }) => {
                 key={tag}
                 variant={selectedTag === tag ? "accent" : "outline"}
                 onClick={() => toggleTag(tag)}
+                className="tag-button"
               >
                 #{tag}
               </CustomButton>
@@ -44,6 +46,7 @@ const TagFilter = ({ posts }) => {
                 key={tag}
                 variant={selectedTag === tag ? "accent" : "outline"}
                 onClick={() => toggleTag(tag)}
+                className="tag-button"
               >
                 #{tag}
               </CustomButton>

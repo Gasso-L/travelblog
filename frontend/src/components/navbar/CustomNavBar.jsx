@@ -65,10 +65,18 @@ const CustomNavBar = () => {
               <UserMenu />
             ) : (
               <>
-                <CustomButton variant="outline" onClick={handleOpenLogin}>
+                <CustomButton
+                  variant="outline"
+                  onClick={handleOpenLogin}
+                  className="d-none d-md-flex"
+                >
                   Login
                 </CustomButton>
-                <CustomButton variant="accent" onClick={handleOpenSignup}>
+                <CustomButton
+                  variant="accent"
+                  onClick={handleOpenSignup}
+                  className="d-none d-md-flex"
+                >
                   Sign Up
                 </CustomButton>
               </>
