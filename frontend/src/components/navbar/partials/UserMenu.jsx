@@ -1,7 +1,7 @@
-import { useProfile } from "../../../contexts/ProfileContext";
-import { useAuth } from "../../../contexts/AuthContext";
 import { FiSettings, FiPower, FiPlusCircle } from "react-icons/fi";
-import { FaChevronDown } from "react-icons/fa";
+import { useProfile } from "../../../contexts/ProfileContext";
+import { FaChevronDown, FaUserAlt } from "react-icons/fa";
+import { useAuth } from "../../../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
 import { useState } from "react";
@@ -60,7 +60,13 @@ const UserMenu = () => {
           <FiPlusCircle />
           New Post
         </button>
-
+        <button
+          className="dropdown-item user-menu-link d-flex align-items-center gap-2"
+          onClick={() => handleNavigate(`/profile/${userData._id}`)}
+        >
+          <FaUserAlt />
+          Profile
+        </button>
         <button
           className="dropdown-item user-menu-link d-flex align-items-center gap-2"
           onClick={() => handleNavigate("/profile")}

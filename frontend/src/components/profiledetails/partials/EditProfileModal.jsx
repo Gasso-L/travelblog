@@ -8,7 +8,6 @@ import {
 } from "react-bootstrap";
 import { useFormValidation } from "../../../hooks/useFormValidation";
 import { useProfile } from "../../../contexts/ProfileContext";
-import { validateField } from "../../../utility/validation";
 import { useAuth } from "../../../contexts/AuthContext";
 import CustomButton from "../../button/CustomButton";
 import { FaEye, FaEyeSlash } from "react-icons/fa";

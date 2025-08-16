@@ -1,13 +1,16 @@
 import { Container, Row, Col, Spinner, Alert, Card } from "react-bootstrap";
+import EditProfileModal from "../profiledetails/partials/EditProfileModal";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useProfile } from "../../contexts/ProfileContext";
 import PostCard from "../blog/partials/postcard/PostCard";
+import CustomButton from "../button/CustomButton";
+import { useEffect, useState } from "react";
+import { FiEdit } from "react-icons/fi";
 import "./publicprofiledetails.css";
-import { useEffect } from "react";
 
 const PublicProfileDetails = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const [showEditModal, setShowEditModal] = useState(false);
   const {
     publicUserData,
     publicUserPosts,
@@ -15,6 +18,7 @@ const PublicProfileDetails = () => {
     loading,
     error,
     userData: loggedInUserData,
+    updateProfile,
   } = useProfile();
 
   useEffect(() => {
@@ -92,10 +96,10 @@ const PublicProfileDetails = () => {
                   className="avatar-pop-in rounded-circle"
                 />
               </div>
-              <Card.Title as="h1" className="mb-1 text-dark">
+              <Card.Title as="h1" className="mb-1">
                 {publicUserData.firstName}
               </Card.Title>
-              <Card.Subtitle className="text-muted fs-5 mb-3">
+              <Card.Subtitle className="fs-5 mb-3">
                 @{publicUserData.userName}
               </Card.Subtitle>
 

@@ -13,6 +13,8 @@
 }
 
 .profile-card-slide-in {
+  background-color: var(--btn-border);
+  color: var(--text);
   animation: slideInUp 0.7s ease-out forwards;
   opacity: 0;
   transform: translateY(30px);

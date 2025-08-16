@@ -7,7 +7,7 @@ import {
   Button,
 } from "react-bootstrap";
 import { FiSettings, FiPower, FiLogIn, FiPlusCircle } from "react-icons/fi";
-import { FaHome, FaSearch, FaUserPlus } from "react-icons/fa";
+import { FaHome, FaSearch, FaUserPlus, FaUserAlt } from "react-icons/fa";
 import { useAuth } from "../../contexts/AuthContext";
 import CustomButton from "../button/CustomButton";
 import SignupForm from "../signupform/SignupForm";
@@ -26,7 +26,7 @@ const CustomNavBar = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
-  const { token, handleLogout } = useAuth();
+  const { token, userId, handleLogout } = useAuth();
   const navigate = useNavigate();
 
   const handleCloseSignup = () => setShowSignup(false);
@@ -125,11 +125,20 @@ const CustomNavBar = () => {
                     <Button
                       variant="link"
                       className="nav-link d-flex justify-content-start align-items-center gap-2"
+                      onClick={() => handleNavigate(`/profile/${userId}`)}
+                    >
+                      <FaUserAlt />
+                      Public Profile
+                    </Button>
+                    <Button
+                      variant="link"
+                      className="nav-link d-flex justify-content-start align-items-center gap-2"
                       onClick={() => handleNavigate("/create-post")}
                     >
                       <FiPlusCircle />
                       New Post
                     </Button>
+
                     <Button
                       variant="link"
                       className="nav-link d-flex justify-content-start align-items-center gap-2"
