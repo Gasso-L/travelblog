@@ -46,16 +46,12 @@ passport.use(
         let existingUser = await usersService.findOne({ email });
 
         if (!existingUser) {
-          /* const randomPassword = crypto.randomBytes(12).toString("base64");
-          const hashedPassword = await bcrypt.hash(randomPassword, 10); */
-
           const newUserData = {
             firstName: profile.displayName || profile.username || "GitHubUser",
             lastName: "GitHubUser",
             userName: profile.username || "GitHubUser",
             email,
             avatar,
-            /* password: hashedPassword, */
             authProvider: "github",
           };
           existingUser = await usersService.createUser(newUserData);
@@ -85,17 +81,12 @@ passport.use(
         let existingUser = await usersService.findOne({ email });
 
         if (!existingUser) {
-          /* const generatedPassword = crypto.randomBytes(12).toString("base64");
-
-          const hashedPassword = await bcrypt.hash(generatedPassword, 10); */
-
           const newUserData = {
             firstName: profile.name.givenName || profile.displayName,
             lastName: profile.name.familyName || "",
             userName: profile.username || "GoogleUser",
             email,
             avatar,
-            /* password: hashedPassword, */
             authProvider: "google",
           };
 

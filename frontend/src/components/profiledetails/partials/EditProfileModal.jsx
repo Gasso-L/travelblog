@@ -1,12 +1,20 @@
-import { Modal, Form, Spinner, Alert, Image } from "react-bootstrap";
+import {
+  Modal,
+  Form,
+  Spinner,
+  Alert,
+  Image,
+  InputGroup,
+} from "react-bootstrap";
+import { useFormValidation } from "../../../hooks/useFormValidation";
 import { useProfile } from "../../../contexts/ProfileContext";
 import { validateField } from "../../../utility/validation";
 import { useAuth } from "../../../contexts/AuthContext";
 import CustomButton from "../../button/CustomButton";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-
 import "./editprofilemodal.css";
 
 const EditProfileModal = ({
@@ -15,44 +23,54 @@ const EditProfileModal = ({
   userData,
   onProfileUpdated,
 }) => {
-  const [formData, setFormData] = useState({
+  const [preview, setPreview] = useState("");
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [isModified, setIsModified] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
+  const toggleConfirmPasswordVisibility = () =>
+    setShowConfirmPassword((prev) => !prev);
+
+  const { userProfile } = useProfile();
+  const { token, handleLogout } = useAuth();
+  const navigate = useNavigate();
+  const isLocalUser = userData?.authProvider === "local";
+
+  const {
+    values,
+    setValues,
+    handleChange,
+    handleBlur,
+    getFeedback,
+    isFieldValid,
+    isFormValid,
+    isModifiedFieldValid,
+    dirty,
+    resetForm,
+  } = useFormValidation({
     firstName: "",
     lastName: "",
     userName: "",
     email: "",
     password: "",
     bio: "",
+    confirmPassword: "",
   });
-  const [preview, setPreview] = useState("");
-  const [avatarFile, setAvatarFile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [isModified, setIsModified] = useState(false);
-
-  const isFormValid =
-    validateField("firstName", formData.firstName) &&
-    validateField("lastName", formData.lastName) &&
-    validateField("userName", formData.userName) &&
-    validateField("email", formData.email) &&
-    validateField("bio", formData.bio) &&
-    (formData.password.length === 0 ||
-      validateField("password", formData.password));
-
-  const { userProfile } = useProfile();
-  const { token, handleLogout } = useAuth();
-  const navigate = useNavigate();
-
-  const isLocalUser = userData?.authProvider === "local";
 
   useEffect(() => {
     if (userData) {
-      setFormData({
+      setValues({
         firstName: userData.firstName || "",
         lastName: userData.lastName || "",
         userName: userData.userName || "",
         email: userData.email || "",
         password: "",
         bio: userData.bio || "",
+        confirmPassword: "",
       });
       setPreview(userData.avatar || "");
       setAvatarFile(null);
@@ -61,21 +79,16 @@ const EditProfileModal = ({
 
   useEffect(() => {
     const hasChanges =
-      formData.firstName !== userData?.firstName ||
-      (formData.lastName !== userData?.lastName) |
-        (formData.userName !== (userData?.userName || "")) ||
-      formData.email !== userData?.email ||
-      formData.password.length > 0 ||
-      formData.bio !== userData?.bio ||
+      values.firstName !== userData?.firstName ||
+      values.lastName !== userData?.lastName ||
+      values.userName !== (userData?.userName || "") ||
+      values.email !== userData?.email ||
+      values.password.length > 0 ||
+      values.bio !== userData?.bio ||
       avatarFile !== null;
 
     setIsModified(hasChanges);
-  }, [formData, avatarFile, userData]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  }, [values, avatarFile, userData]);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
@@ -95,15 +108,15 @@ const EditProfileModal = ({
     setError("");
 
     const payload = {};
-    if (formData.firstName !== userData.firstName)
-      payload.firstName = formData.firstName;
-    if (formData.lastName !== userData.lastName)
-      payload.lastName = formData.lastName;
-    if (formData.userName !== (userData.userName || ""))
-      payload.userName = formData.userName;
-    if (formData.email !== userData.email) payload.email = formData.email;
-    if (formData.password.length > 0) payload.password = formData.password;
-    if (formData.bio !== userData.bio) payload.bio = formData.bio;
+    if (values.firstName !== userData.firstName)
+      payload.firstName = values.firstName;
+    if (values.lastName !== userData.lastName)
+      payload.lastName = values.lastName;
+    if (values.userName !== (userData.userName || ""))
+      payload.userName = values.userName;
+    if (values.email !== userData.email) payload.email = values.email;
+    if (values.password.length > 0) payload.password = values.password;
+    if (values.bio !== userData.bio) payload.bio = values.bio;
 
     try {
       if (Object.keys(payload).length > 0) {
@@ -125,9 +138,7 @@ const EditProfileModal = ({
           }/avatar`,
           {
             method: "PATCH",
-            headers: {
-              authorization: token,
-            },
+            headers: { authorization: token },
             body: avatarFormData,
           }
         );
@@ -181,74 +192,109 @@ const EditProfileModal = ({
             />
           </div>
 
-          <Form.Group className="mb-3">
-            <Form.Label>First Name</Form.Label>
-            <Form.Control
-              name="firstName"
-              value={formData.firstName}
-              onChange={handleChange}
-              required
-              isInvalid={!validateField("firstName", formData.firstName)}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Last Name</Form.Label>
-            <Form.Control
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              required
-              isInvalid={!validateField("lastName", formData.lastName)}
-            />
-          </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Username</Form.Label>
-            <Form.Control
-              name="userName"
-              value={formData.userName}
-              onChange={handleChange}
-              required
-              isInvalid={!validateField("userName", formData.userName)}
-            />
-          </Form.Group>
+          {["firstName", "lastName", "userName", "bio"].map((field) => (
+            <Form.Group className="mb-3" key={field}>
+              <Form.Label>
+                {field === "userName"
+                  ? "Username"
+                  : field === "bio"
+                  ? "Bio"
+                  : field.replace(/^\w/, (c) => c.toUpperCase())}
+              </Form.Label>
+              <Form.Control
+                name={field}
+                type="text"
+                as={field === "bio" ? "textarea" : undefined}
+                rows={field === "bio" ? 3 : undefined}
+                value={values[field]}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                isInvalid={dirty[field] && !!getFeedback(field)}
+                required
+              />
+              {dirty[field] && getFeedback(field) && (
+                <Form.Control.Feedback type="invalid">
+                  {getFeedback(field)}
+                </Form.Control.Feedback>
+              )}
+            </Form.Group>
+          ))}
+
           {isLocalUser && (
-            <Form.Group className="mb-4">
+            <Form.Group className="mb-3">
               <Form.Label>Email</Form.Label>
               <Form.Control
                 name="email"
                 type="email"
-                value={formData.email}
+                value={values.email}
                 onChange={handleChange}
-                isInvalid={!validateField("email", formData.email)}
+                onBlur={handleBlur}
+                isInvalid={dirty.email && !!getFeedback("email")}
                 required
               />
+              {dirty.email && getFeedback("email") && (
+                <Form.Control.Feedback type="invalid">
+                  {getFeedback("email")}
+                </Form.Control.Feedback>
+              )}
             </Form.Group>
           )}
-          <Form.Group className="mb-4">
-            <Form.Label>Bio</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={3}
-              name="bio"
-              value={formData.bio}
-              onChange={handleChange}
-              placeholder="Tell us something about yourself..."
-              isInvalid={!validateField("bio", formData.bio)}
-              required
-            />
-          </Form.Group>
 
           {isLocalUser && (
             <Form.Group className="mb-4">
               <Form.Label>New Password</Form.Label>
-              <Form.Control
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Leave blank to keep current password"
-                isInvalid={!validateField("password", formData.password)}
-              />
+              <InputGroup hasValidation>
+                <Form.Control
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  placeholder="Leave blank to keep current password"
+                  isInvalid={dirty.password && !!getFeedback("password")}
+                />
+                <InputGroup.Text
+                  onClick={togglePasswordVisibility}
+                  style={{ cursor: "pointer" }}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </InputGroup.Text>
+                {dirty.password && getFeedback("password") && (
+                  <Form.Control.Feedback type="invalid">
+                    {getFeedback("password")}
+                  </Form.Control.Feedback>
+                )}
+              </InputGroup>
+            </Form.Group>
+          )}
+
+          {isLocalUser && values.password.length > 0 && (
+            <Form.Group className="mb-4">
+              <Form.Label>Confirm New Password</Form.Label>
+              <InputGroup hasValidation>
+                <Form.Control
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={values.confirmPassword}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={
+                    dirty.confirmPassword && !!getFeedback("confirmPassword")
+                  }
+                  required
+                />
+                <InputGroup.Text
+                  onClick={toggleConfirmPasswordVisibility}
+                  style={{ cursor: "pointer" }}
+                >
+                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                </InputGroup.Text>
+                {dirty.confirmPassword && getFeedback("confirmPassword") && (
+                  <Form.Control.Feedback type="invalid">
+                    {getFeedback("confirmPassword")}
+                  </Form.Control.Feedback>
+                )}
+              </InputGroup>
             </Form.Group>
           )}
 
@@ -265,7 +311,7 @@ const EditProfileModal = ({
             <CustomButton
               type="submit"
               variant="accent"
-              disabled={loading || !isModified || !isFormValid}
+              disabled={loading || !isModified || !isModifiedFieldValid()}
             >
               {loading ? (
                 <Spinner animation="border" size="sm" variant="light" />

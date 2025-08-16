@@ -1,9 +1,9 @@
-import { AuthProvider } from "../../contexts/AuthContext";
 import { Outlet, Link, useLocation } from "react-router-dom";
-import "./authlayout.css";
-import logo from "../../assets/logo.png";
 import { Container, Row, Col, Card } from "react-bootstrap";
+import { AuthProvider } from "../../contexts/AuthContext";
+import logo from "../../assets/logo.png";
 import { FaHome } from "react-icons/fa";
+import "./authlayout.css";
 
 const AuthLayout = () => {
   const location = useLocation();
@@ -30,14 +30,11 @@ const AuthLayout = () => {
                       alt="Tripspire Logo"
                       className="auth-logo"
                     />
-                    <h3 className="fw-bold d-none d-md-inline">Tripspire</h3>
                   </Link>
                 </Card.Header>
                 <Card.Body className="">
                   <Card.Title className="d-flex justify-content-center align-items-center">
-                    {isLogin
-                      ? "Welcome back"
-                      : "Discover the world with Tripspire"}
+                    {isLogin ? "Welcome back" : "Tripspire"}
                   </Card.Title>
                   <Outlet />
                 </Card.Body>

@@ -1,64 +1,81 @@
 import { Container, Row, Col, Form, Alert } from "react-bootstrap";
+import { useFormValidation } from "../../hooks/useFormValidation";
 import OAuthButtons from "../button/oauthbuttons/OAuthButtons";
+import { useAuth } from "../../contexts/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import CustomButton from "../button/CustomButton";
+import { toast } from "react-toastify";
 import { useState } from "react";
-import { useAuth } from "../../contexts/AuthContext";
 import "./loginform.css";
 
 const LoginForm = ({ onLoginComplete }) => {
-  const [formData, setFormData] = useState({
+  const initialValues = {
     email: "",
     password: "",
-  });
+  };
+
+  const {
+    values,
+    handleChange,
+    handleBlur,
+    touched,
+    errors,
+    isFormValid,
+    resetForm,
+  } = useFormValidation(initialValues);
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess(false);
 
+    if (!isFormValid()) {
+      setError("Please correct the highlighted fields.");
+      return;
+    }
+
+    setLoading(true);
+
     try {
       const res = await fetch(`${import.meta.env.VITE_SERVER_BASE_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(values),
       });
 
       if (!res.ok) {
         const err = await res.json();
-        throw new Error(err.message || "Login failed");
+        setError(err.message || "Login failed");
+        toast.error("Invalid email or password");
+        resetForm();
+        return;
       }
 
       const { token, user } = await res.json();
       login(token, user._id);
 
       setSuccess(true);
-      if (onLoginComplete) {
-        onLoginComplete();
-      }
+      if (onLoginComplete) onLoginComplete();
       setTimeout(() => navigate("/"), 1500);
     } catch (err) {
       setError(err.message);
+      toast.error(err.message || "Something went wrong. Please try later!");
+      resetForm();
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <Container className="py-5">
       <Row className="justify-content-center">
-        <Col md={6}>
+        <Col xs={12} sm={10} md={8} lg={6}>
           <h2 className="mb-5 fw-bold">Log In</h2>
 
           <OAuthButtons />
@@ -70,10 +87,14 @@ const LoginForm = ({ onLoginComplete }) => {
               <Form.Control
                 type="email"
                 name="email"
-                value={formData.email}
+                value={values.email}
                 onChange={handleChange}
-                required
+                onBlur={handleBlur}
+                isInvalid={touched.email && !!errors.email}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.email}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="password">
@@ -81,14 +102,23 @@ const LoginForm = ({ onLoginComplete }) => {
               <Form.Control
                 type="password"
                 name="password"
-                value={formData.password}
+                value={values.password}
                 onChange={handleChange}
-                required
+                onBlur={handleBlur}
+                isInvalid={touched.password && !!errors.password}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.password}
+              </Form.Control.Feedback>
             </Form.Group>
 
-            <CustomButton type="submit" variant="accent" className="w-100 mt-3">
-              Log In
+            <CustomButton
+              type="submit"
+              variant="accent"
+              className="w-100 mt-3"
+              disabled={!isFormValid() || loading}
+            >
+              {loading ? "Logging in..." : "Log In"}
             </CustomButton>
           </Form>
 

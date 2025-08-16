@@ -1,3 +1,4 @@
+const EmailAlreadyExistsException = require("../exceptions/users/EmailAlreadyExistsException");
 const InvalidUserIdException = require("../exceptions/users/InvalidUserIdException");
 const UsersNotFoundException = require("../exceptions/users/UserNotFoundException");
 const usersService = require("../services/users");
@@ -51,6 +52,12 @@ const findUserById = async (req, res, next) => {
 const createUser = async (req, res, next) => {
   try {
     const { body } = req;
+
+    const existingUser = await usersService.findOne({ email: body.email });
+
+    if (existingUser) {
+      throw new EmailAlreadyExistsException();
+    }
 
     const savedUser = await usersService.createUser(body);
 

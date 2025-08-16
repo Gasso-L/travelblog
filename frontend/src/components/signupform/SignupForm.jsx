@@ -1,53 +1,63 @@
-import { Container, Row, Col, Form, Button, Alert } from "react-bootstrap";
+import { Container, Row, Col, Form, InputGroup, Alert } from "react-bootstrap";
+import { useFormValidation } from "../../hooks/useFormValidation";
+import { FaEye, FaEyeSlash, FaCheckCircle } from "react-icons/fa";
 import OAuthButtons from "../button/oauthbuttons/OAuthButtons";
-import { validateField } from "../../utility/validation";
+import { useNavigate, Link } from "react-router-dom";
 import CustomButton from "../button/CustomButton";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import { useState } from "react";
 import "./signupform.css";
 
 const SignupForm = () => {
-  const [formData, setFormData] = useState({
+  const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const initialValues = {
     firstName: "",
     lastName: "",
     email: "",
     password: "",
+    confirmPassword: "",
     avatar:
       "https://res.cloudinary.com/dkfcilr87/image/upload/v1752317559/avatar9_ul9bmv.png",
-  });
-
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-  const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
   };
+
+  const {
+    values,
+    handleChange,
+    handleBlur,
+    touched,
+    errors,
+    isFieldValid,
+    isFormValid,
+    resetForm,
+  } = useFormValidation(initialValues);
+
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
+  const toggleConfirmPasswordVisibility = () =>
+    setShowConfirmPassword((prev) => !prev);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const invalidFields = Object.entries(formData).filter(
-      ([name, value]) => !validateField(name, value)
-    );
 
-    if (invalidFields.length > 0) {
-      setError("Please correct the highlighted fields.");
+    if (!isFormValid()) {
+      toast.error("Please correct the highlighted fields.");
       return;
     }
 
-    setError("");
-    setSuccess(false);
+    if (values.password !== values.confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
 
     try {
+      const { confirmPassword, ...payload } = values;
+
       const res = await fetch(`${import.meta.env.VITE_SERVER_BASE_URL}/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -55,21 +65,20 @@ const SignupForm = () => {
         throw new Error(err.message || "Registration failed");
       }
 
-      setSuccess(true);
-      setTimeout(() => navigate("/"), 1800);
+      toast.success("Account created - Please Log In");
+      resetForm();
+      setTimeout(() => navigate("/login"), 2500);
     } catch (err) {
-      setError(err.message);
+      toast.error(err.message);
+      resetForm();
     }
   };
 
   return (
     <Container className="py-5">
       <Row className="justify-content-center">
-        <Col md={6}>
+        <Col xs={12} sm={10} md={8} lg={6}>
           <h2 className="mb-5 fw-bold">Sign Up</h2>
-
-          {success && <Alert variant="success">Account created!</Alert>}
-          {error && <Alert variant="danger">{error}</Alert>}
           <OAuthButtons />
           <hr className="my-3" />
 
@@ -79,11 +88,14 @@ const SignupForm = () => {
               <Form.Control
                 type="text"
                 name="firstName"
-                value={formData.firstName}
+                value={values.firstName}
                 onChange={handleChange}
-                required
-                isInvalid={!validateField("firstName", formData.firstName)}
+                onBlur={handleBlur}
+                isInvalid={touched.firstName && !!errors.firstName}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.firstName}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="lastName">
@@ -91,10 +103,14 @@ const SignupForm = () => {
               <Form.Control
                 type="text"
                 name="lastName"
-                value={formData.lastName}
+                value={values.lastName}
                 onChange={handleChange}
-                isInvalid={!validateField("lastName", formData.lastName)}
+                onBlur={handleBlur}
+                isInvalid={touched.lastName && !!errors.lastName}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.lastName}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="email">
@@ -102,26 +118,70 @@ const SignupForm = () => {
               <Form.Control
                 type="email"
                 name="email"
-                value={formData.email}
+                value={values.email}
                 onChange={handleChange}
-                required
-                isInvalid={!validateField("email", formData.email)}
+                onBlur={handleBlur}
+                isInvalid={touched.email && !!errors.email}
               />
+              <Form.Control.Feedback type="invalid">
+                {errors.email}
+              </Form.Control.Feedback>
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="password">
               <Form.Label>Password* (min 12 characters)</Form.Label>
-              <Form.Control
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                isInvalid={!validateField("password", formData.password)}
-              />
+              <InputGroup hasValidation>
+                <Form.Control
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={touched.password && !!errors.password}
+                />
+                <InputGroup.Text
+                  onClick={togglePasswordVisibility}
+                  style={{ cursor: "pointer" }}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </InputGroup.Text>
+                <Form.Control.Feedback type="invalid">
+                  {errors.password}
+                </Form.Control.Feedback>
+              </InputGroup>
             </Form.Group>
 
-            <CustomButton type="submit" variant="accent" className="w-100 mt-3">
+            <Form.Group className="mb-3" controlId="confirmPassword">
+              <Form.Label>Confirm Password*</Form.Label>
+              <InputGroup hasValidation>
+                <Form.Control
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={values.confirmPassword}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  isInvalid={
+                    touched.confirmPassword && !!errors.confirmPassword
+                  }
+                />
+                <InputGroup.Text
+                  onClick={toggleConfirmPasswordVisibility}
+                  style={{ cursor: "pointer" }}
+                >
+                  {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                </InputGroup.Text>
+                <Form.Control.Feedback type="invalid">
+                  {errors.confirmPassword}
+                </Form.Control.Feedback>
+              </InputGroup>
+            </Form.Group>
+
+            <CustomButton
+              type="submit"
+              variant="accent"
+              className="w-100 mt-3"
+              disabled={!isFormValid()}
+            >
               Register
             </CustomButton>
           </Form>

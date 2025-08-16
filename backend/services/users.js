@@ -1,5 +1,6 @@
 const User = require("../models/users");
 const Post = require("../models/posts");
+const bcrypt = require("bcrypt");
 
 const findAllUsers = async (page, pageSize) => {
   const users = await User.find()
@@ -39,6 +40,11 @@ const createUser = async (user) => {
 
 const updateUser = async (id, user) => {
   const options = { new: true };
+  if (typeof user.password === "string" && user.password.trim().length > 0) {
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+  }
+
   return User.findByIdAndUpdate(id, user, options);
 };
 
