@@ -6,7 +6,7 @@ import {
   Modal,
   Button,
 } from "react-bootstrap";
-import { FiSettings, FiPower, FiLogIn } from "react-icons/fi";
+import { FiSettings, FiPower, FiLogIn, FiPlusCircle } from "react-icons/fi";
 import { FaHome, FaSearch, FaUserPlus } from "react-icons/fa";
 import { useAuth } from "../../contexts/AuthContext";
 import CustomButton from "../button/CustomButton";
@@ -122,6 +122,14 @@ const CustomNavBar = () => {
                 <h4 className="py-2">Profile</h4>
                 {token ? (
                   <>
+                    <Button
+                      variant="link"
+                      className="nav-link d-flex justify-content-start align-items-center gap-2"
+                      onClick={() => handleNavigate("/create-post")}
+                    >
+                      <FiPlusCircle />
+                      New Post
+                    </Button>
                     <Button
                       variant="link"
                       className="nav-link d-flex justify-content-start align-items-center gap-2"

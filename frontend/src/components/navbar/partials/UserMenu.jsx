@@ -1,11 +1,9 @@
 import { useProfile } from "../../../contexts/ProfileContext";
 import { useAuth } from "../../../contexts/AuthContext";
-import { FiSettings, FiPower } from "react-icons/fi";
+import { FiSettings, FiPower, FiPlusCircle } from "react-icons/fi";
 import { FaChevronDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { Dropdown } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
 import { useState } from "react";
 import "./usermenu.css";
 
@@ -19,8 +17,18 @@ const UserMenu = () => {
     setIsOpen(isShown);
   };
 
+  const handleNavigate = (path) => {
+    setIsOpen(false);
+    navigate(path);
+  };
+
   return (
-    <Dropdown align="end" className="pe-3" onToggle={handleToggle}>
+    <Dropdown
+      align="end"
+      className="pe-3"
+      show={isOpen}
+      onToggle={handleToggle}
+    >
       <Dropdown.Toggle variant="link" className="no-caret p-0 border-0">
         <div className="d-flex align-items-center gap-2">
           {userData && (
@@ -45,13 +53,22 @@ const UserMenu = () => {
       </Dropdown.Toggle>
 
       <Dropdown.Menu className="rounded-3 custom-dropdown-menu">
-        <Link
-          to={"/profile"}
+        <button
           className="dropdown-item user-menu-link d-flex align-items-center gap-2"
+          onClick={() => handleNavigate("/create-post")}
+        >
+          <FiPlusCircle />
+          New Post
+        </button>
+
+        <button
+          className="dropdown-item user-menu-link d-flex align-items-center gap-2"
+          onClick={() => handleNavigate("/profile")}
         >
           <FiSettings />
           Account
-        </Link>
+        </button>
+
         <Dropdown.Divider />
         <Dropdown.Item
           onClick={handleLogout}
