@@ -108,7 +108,7 @@ const PublicProfileDetails = () => {
                   <strong>Bio:</strong> {publicUserData.bio}
                 </Card.Text>
               ) : (
-                <Card.Text className="mb-4 text-muted">
+                <Card.Text className="mb-4">
                   <strong>Bio:</strong> No Bio yet
                 </Card.Text>
               )}

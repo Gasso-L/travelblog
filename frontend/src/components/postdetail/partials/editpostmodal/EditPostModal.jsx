@@ -1,5 +1,5 @@
+import { useFormValidation } from "../../../../hooks/useFormValidation";
 import { sanitizeContent } from "../../../../utility/sanitizeContent";
-import { validateField } from "../../../../utility/validation";
 import { Modal, Form, Spinner, Alert } from "react-bootstrap";
 import CustomButton from "../../../button/CustomButton";
 import { useState, useEffect, useRef } from "react";
@@ -9,7 +9,15 @@ import { toast } from "react-toastify";
 import "./editpostmodal.css";
 
 const EditPostModal = ({ show, handleClose, postData, onPostUpdated }) => {
-  const [formData, setFormData] = useState({
+  const {
+    values,
+    handleChange,
+    handleBlur,
+    touched,
+    errors,
+    isFormValid,
+    setValues,
+  } = useFormValidation({
     title: "",
     location: "",
     tags: "",
@@ -34,7 +42,7 @@ const EditPostModal = ({ show, handleClose, postData, onPostUpdated }) => {
         content: postData.content || "",
       };
 
-      setFormData({
+      setValues({
         title: postData.title || "",
         location: postData.location || "",
         tags: initialTags,
@@ -60,14 +68,14 @@ const EditPostModal = ({ show, handleClose, postData, onPostUpdated }) => {
     } = initialValuesRef.current;
 
     const hasChanges =
-      formData.title !== title ||
-      formData.location !== location ||
-      formData.tags !== tags ||
+      values.title !== title ||
+      values.location !== location ||
+      values.tags !== tags ||
       sanitize(content) !== sanitize(initialContent) ||
       newImages.length > 0;
 
     setIsModified(hasChanges);
-  }, [formData, content, newImages, isInitialized]);
+  }, [values, content, newImages, isInitialized]);
 
   const getTextFromHTML = (html) => {
     const tempDiv = document.createElement("div");
@@ -80,25 +88,25 @@ const EditPostModal = ({ show, handleClose, postData, onPostUpdated }) => {
     return text.trim().length >= 2 && text.trim().length <= 5000;
   };
 
-  const isFormValid =
-    validateField("title", formData.title) &&
-    validateField("location", formData.location) &&
-    validateField("tags", formData.tags) &&
-    isContentValid();
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleImageChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    if (selectedFiles.length > 10) {
+      toast.warning("You can upload up to 10 images.");
+      return;
+    }
+    setNewImages(selectedFiles);
   };
 
-  const handleImageChange = (e) => {
-    setNewImages(Array.from(e.target.files));
+  const removeImage = (indexToRemove) => {
+    setNewImages((prevImages) =>
+      prevImages.filter((_, idx) => idx !== indexToRemove)
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isFormValid) {
+    if (!isFormValid() || !isContentValid()) {
       toast.warning("Please fill out all fields correctly.");
       return;
     }
@@ -114,24 +122,27 @@ const EditPostModal = ({ show, handleClose, postData, onPostUpdated }) => {
     try {
       const cleanContent = sanitizeContent(content);
       const updatedFields = {};
-      if (formData.title !== (postData?.title || ""))
-        updatedFields.title = formData.title;
-      if (formData.location !== (postData?.location || ""))
-        updatedFields.location = formData.location;
+
+      if (values.title !== (postData?.title || ""))
+        updatedFields.title = values.title;
+      if (values.location !== (postData?.location || ""))
+        updatedFields.location = values.location;
       if (content !== (postData?.content || ""))
         updatedFields.content = cleanContent;
 
       const initialTagsArray = postData.tags || [];
-      const newTagsArray = formData.tags
+      const newTagsArray = values.tags
         .split(",")
         .map((tag) => tag.trim())
         .filter(Boolean);
+
       if (
         JSON.stringify(newTagsArray.sort()) !==
         JSON.stringify(initialTagsArray.sort())
       ) {
         updatedFields.tags = newTagsArray;
       }
+
       await onPostUpdated(updatedFields, newImages);
 
       toast.dismiss("updating-post");
@@ -175,35 +186,48 @@ const EditPostModal = ({ show, handleClose, postData, onPostUpdated }) => {
             <Form.Label>Title</Form.Label>
             <Form.Control
               name="title"
-              value={formData.title}
+              value={values.title}
               onChange={handleChange}
-              required
-              isInvalid={!validateField("title", formData.title)}
+              onBlur={handleBlur}
+              isInvalid={touched.title && !!errors.title}
               disabled={loading}
+              required
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.title}
+            </Form.Control.Feedback>
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Location</Form.Label>
             <Form.Control
               name="location"
-              value={formData.location}
+              value={values.location}
               onChange={handleChange}
-              required
-              isInvalid={!validateField("location", formData.location)}
+              onBlur={handleBlur}
+              isInvalid={touched.location && !!errors.location}
               disabled={loading}
+              required
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.location}
+            </Form.Control.Feedback>
           </Form.Group>
 
           <Form.Group className="mb-3">
             <Form.Label>Tags (comma separated)</Form.Label>
             <Form.Control
               name="tags"
-              value={formData.tags}
+              value={values.tags}
               onChange={handleChange}
-              isInvalid={!validateField("tags", formData.tags)}
+              onBlur={handleBlur}
+              isInvalid={touched.tags && !!errors.tags}
               disabled={loading}
+              required
             />
+            <Form.Control.Feedback type="invalid">
+              {errors.tags}
+            </Form.Control.Feedback>
           </Form.Group>
 
           <Form.Group className="mb-4">
@@ -242,6 +266,53 @@ const EditPostModal = ({ show, handleClose, postData, onPostUpdated }) => {
               Uploading new images will replace existing ones. Select all images
               you want for this post.
             </Form.Text>
+
+            {newImages.length > 0 && (
+              <div className="d-flex flex-wrap gap-2 mt-3">
+                {newImages.map((img, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      position: "relative",
+                      width: "80px",
+                      height: "80px",
+                    }}
+                  >
+                    <img
+                      src={URL.createObjectURL(img)}
+                      alt={`preview-${idx}`}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        borderRadius: "6px",
+                        border: "1px solid #ccc",
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(idx)}
+                      style={{
+                        position: "absolute",
+                        top: "-6px",
+                        right: "-6px",
+                        background: "#F59E0B",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "20px",
+                        height: "20px",
+                        fontSize: "12px",
+                        cursor: "pointer",
+                      }}
+                      title="Remove image"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </Form.Group>
 
           <Form.Group className="mb-5 py-3">

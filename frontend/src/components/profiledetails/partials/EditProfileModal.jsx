@@ -44,11 +44,10 @@ const EditProfileModal = ({
     setValues,
     handleChange,
     handleBlur,
-    getFeedback,
-    isFieldValid,
+    touched,
+    errors,
     isFormValid,
     isModifiedFieldValid,
-    dirty,
     resetForm,
   } = useFormValidation({
     firstName: "",
@@ -88,6 +87,10 @@ const EditProfileModal = ({
 
     setIsModified(hasChanges);
   }, [values, avatarFile, userData]);
+
+  useEffect(() => {
+    if (!show) resetForm();
+  }, [show]);
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
@@ -208,14 +211,12 @@ const EditProfileModal = ({
                 value={values[field]}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                isInvalid={dirty[field] && !!getFeedback(field)}
+                isInvalid={touched[field] && !!errors[field]}
                 required
               />
-              {dirty[field] && getFeedback(field) && (
-                <Form.Control.Feedback type="invalid">
-                  {getFeedback(field)}
-                </Form.Control.Feedback>
-              )}
+              <Form.Control.Feedback type="invalid">
+                {errors[field]}
+              </Form.Control.Feedback>
             </Form.Group>
           ))}
 
@@ -228,14 +229,12 @@ const EditProfileModal = ({
                 value={values.email}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                isInvalid={dirty.email && !!getFeedback("email")}
+                isInvalid={touched.email && !!errors.email}
                 required
               />
-              {dirty.email && getFeedback("email") && (
-                <Form.Control.Feedback type="invalid">
-                  {getFeedback("email")}
-                </Form.Control.Feedback>
-              )}
+              <Form.Control.Feedback type="invalid">
+                {errors.email}
+              </Form.Control.Feedback>
             </Form.Group>
           )}
 
@@ -250,7 +249,7 @@ const EditProfileModal = ({
                   onChange={handleChange}
                   onBlur={handleBlur}
                   placeholder="Leave blank to keep current password"
-                  isInvalid={dirty.password && !!getFeedback("password")}
+                  isInvalid={touched.password && !!errors.password}
                 />
                 <InputGroup.Text
                   onClick={togglePasswordVisibility}
@@ -258,11 +257,9 @@ const EditProfileModal = ({
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </InputGroup.Text>
-                {dirty.password && getFeedback("password") && (
-                  <Form.Control.Feedback type="invalid">
-                    {getFeedback("password")}
-                  </Form.Control.Feedback>
-                )}
+                <Form.Control.Feedback type="invalid">
+                  {errors.password}
+                </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
           )}
@@ -278,7 +275,7 @@ const EditProfileModal = ({
                   onChange={handleChange}
                   onBlur={handleBlur}
                   isInvalid={
-                    dirty.confirmPassword && !!getFeedback("confirmPassword")
+                    touched.confirmPassword && !!errors.confirmPassword
                   }
                   required
                 />
@@ -288,11 +285,9 @@ const EditProfileModal = ({
                 >
                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                 </InputGroup.Text>
-                {dirty.confirmPassword && getFeedback("confirmPassword") && (
-                  <Form.Control.Feedback type="invalid">
-                    {getFeedback("confirmPassword")}
-                  </Form.Control.Feedback>
-                )}
+                <Form.Control.Feedback type="invalid">
+                  {errors.confirmPassword}
+                </Form.Control.Feedback>
               </InputGroup>
             </Form.Group>
           )}

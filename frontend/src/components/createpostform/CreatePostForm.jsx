@@ -1,6 +1,6 @@
+import { useFormValidation } from "../../hooks/useFormValidation";
 import { sanitizeContent } from "../../utility/sanitizeContent";
 import { Form, Card, Alert, Spinner } from "react-bootstrap";
-import { validateField } from "../../utility/validation";
 import { usePosts } from "../../contexts/PostContext";
 import { useAuth } from "../../contexts/AuthContext";
 import CustomButton from "../button/CustomButton";
@@ -14,60 +14,70 @@ import "./createpost.css";
 const CreatePostForm = () => {
   const { createPost, uploadImages, error, setError } = usePosts();
   const { token } = useAuth();
-  const [formData, setFormData] = useState({
+  const navigate = useNavigate();
+
+  const {
+    values,
+    handleChange,
+    handleBlur,
+    touched,
+    errors,
+    isFormValid,
+    resetForm,
+  } = useFormValidation({
     title: "",
     location: "",
     tags: "",
   });
+
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState([]);
-  const navigate = useNavigate();
 
-  const getTextFromHTML = (html) => {
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = html;
-    return tempDiv.textContent || tempDiv.innerText || "";
+  const handleImageChange = (e) => {
+    const selected = Array.from(e.target.files);
+    const total = images.length + selected.length;
+
+    if (total > 10) {
+      toast.warning("You can upload up to 10 images.");
+      return;
+    }
+
+    setImages((prev) => [...prev, ...selected]);
+  };
+
+  const removeImage = (index) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const isContentValid = () => {
-    const text = getTextFromHTML(content);
-    return text.trim().length >= 2 && text.trim().length <= 5000;
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleImageChange = (e) => {
-    setImages(Array.from(e.target.files));
+    const text = document.createElement("div");
+    text.innerHTML = content;
+    const plain = text.textContent || text.innerText || "";
+    return plain.trim().length >= 2 && plain.trim().length <= 5000;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isFormValid) {
+    if (!isFormValid() || !isContentValid()) {
       toast.warning("Please fill out all fields correctly.");
       return;
     }
 
     setLoading(true);
     setError("");
-
     toast.info("Creating post...", { autoClose: false, toastId: "creating" });
 
     try {
       const cleanContent = sanitizeContent(content);
-
       const postPayload = {
-        ...formData,
-        tags: formData.tags.split(",").map((tag) => tag.trim()),
+        ...values,
+        tags: values.tags.split(",").map((tag) => tag.trim()),
         content: cleanContent,
       };
 
       const createdPost = await createPost(postPayload, token);
-
       if (!createdPost || !createdPost._id) {
         throw new Error("Post creation failed or missing _id");
       }
@@ -80,17 +90,19 @@ const CreatePostForm = () => {
           toastId: "uploading",
         });
         try {
-          const uploadResult = await uploadImages(createdPost._id, images);
+          await uploadImages(createdPost._id, images);
           toast.dismiss("uploading");
-        } catch (uploadErr) {
+        } catch {
           toast.dismiss("uploading");
           toast.error("Image upload failed");
         }
       }
 
       toast.success("Post created!");
+      resetForm();
+      setContent("");
       navigate("/profile", { state: { refresh: true } });
-    } catch (err) {
+    } catch {
       toast.dismiss("creating");
       toast.error("Something went wrong. Please try again.");
       setError("Something went wrong. Please try again.");
@@ -98,12 +110,6 @@ const CreatePostForm = () => {
       setLoading(false);
     }
   };
-
-  const isFormValid =
-    validateField("title", formData.title) &&
-    validateField("location", formData.location) &&
-    validateField("tags", formData.tags) &&
-    isContentValid();
 
   const modules = {
     toolbar: [
@@ -124,38 +130,51 @@ const CreatePostForm = () => {
           <Form.Label>Title</Form.Label>
           <Form.Control
             name="title"
-            value={formData.title}
+            value={values.title}
             onChange={handleChange}
-            required
-            isInvalid={!validateField("title", formData.title)}
+            onBlur={handleBlur}
+            isInvalid={touched.title && !!errors.title}
             disabled={loading}
+            required
           />
+          <Form.Control.Feedback type="invalid">
+            {errors.title}
+          </Form.Control.Feedback>
         </Form.Group>
 
         <Form.Group className="mb-3">
           <Form.Label>Location</Form.Label>
           <Form.Control
             name="location"
-            value={formData.location}
+            value={values.location}
             onChange={handleChange}
-            required
-            isInvalid={!validateField("location", formData.location)}
+            onBlur={handleBlur}
+            isInvalid={touched.location && !!errors.location}
             disabled={loading}
+            required
           />
+          <Form.Control.Feedback type="invalid">
+            {errors.location}
+          </Form.Control.Feedback>
         </Form.Group>
 
         <Form.Group className="mb-3">
           <Form.Label>Tags (comma separated)</Form.Label>
           <Form.Control
             name="tags"
-            value={formData.tags}
+            value={values.tags}
             onChange={handleChange}
-            isInvalid={!validateField("tags", formData.tags)}
+            onBlur={handleBlur}
+            isInvalid={touched.tags && !!errors.tags}
             disabled={loading}
+            required
           />
+          <Form.Control.Feedback type="invalid">
+            {errors.tags}
+          </Form.Control.Feedback>
         </Form.Group>
 
-        <Form.Group className="mb-4">
+        <Form.Group className="my-4">
           <Form.Label>Images</Form.Label>
           <Form.Control
             type="file"
@@ -164,6 +183,50 @@ const CreatePostForm = () => {
             onChange={handleImageChange}
             disabled={loading}
           />
+          <div className="d-flex flex-wrap gap-2 mt-3">
+            {images.map((img, idx) => (
+              <div
+                key={idx}
+                style={{
+                  position: "relative",
+                  width: "100px",
+                  height: "100px",
+                }}
+              >
+                <img
+                  src={URL.createObjectURL(img)}
+                  alt={`preview-${idx}`}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: "8px",
+                    border: "1px solid #ccc",
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeImage(idx)}
+                  style={{
+                    position: "absolute",
+                    top: "-6px",
+                    right: "-6px",
+                    background: "#F59E0B",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "50%",
+                    width: "20px",
+                    height: "20px",
+                    fontSize: "12px",
+                    cursor: "pointer",
+                  }}
+                  title="Remove image"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
         </Form.Group>
 
         <Form.Group className="mb-5 py-3">
@@ -180,6 +243,11 @@ const CreatePostForm = () => {
               placeholder="Write your post here..."
             />
           </div>
+          {!isContentValid() && (
+            <div className="invalid-feedback d-block">
+              Content must be between 2 and 5000 characters.
+            </div>
+          )}
         </Form.Group>
 
         <div className="d-flex justify-content-end align-items-center mt-5 gap-2">
