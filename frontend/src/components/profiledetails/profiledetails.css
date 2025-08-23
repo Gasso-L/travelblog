@@ -7,6 +7,21 @@
   margin-bottom: 1.5rem;
 }
 
+.wrapper-post-scrollable {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.wrapper-post-scrollable::-webkit-scrollbar {
+  width: 6px;
+}
+
+.wrapper-post-scrollable::-webkit-scrollbar-thumb {
+  background-color: #ff8c42;
+  border-radius: 4px;
+}
+
 .profile-card {
   border-radius: 1.2rem;
   background-color: var(--bg);
@@ -30,4 +45,34 @@
 
 .post-profile-card:hover {
   box-shadow: 0 0 15px var(--btn-accent-active-focus);
+}
+
+.accordion-posts .accordion-button.collapsed {
+  background-color: var(--bg) !important;
+  color: var(--text) !important;
+}
+
+.accordion-posts .accordion-button:not(.collapsed) {
+  background-color: var(--btn-accent-color);
+  color: var(--bg);
+}
+
+.accordion-posts .accordion-body {
+  background-color: var(--bg);
+  color: var(--text);
+  border-top: 1px solid #ff8c42;
+}
+
+.accordion-posts .accordion-header:hover {
+  background-color: #ff8c42;
+  cursor: pointer;
+}
+
+.accordion-posts {
+  max-width: 800px;
+}
+
+.accordion-posts .accordion-button.collapsed::after {
+  filter: brightness(0) saturate(100%) invert(90%) sepia(0%) saturate(0%)
+    hue-rotate(0deg);
 }

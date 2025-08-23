@@ -149,6 +149,7 @@ export const ProfileProvider = ({ children }) => {
         loading,
         error,
         setError,
+        setUserPosts,
         userProfile,
         updateProfile,
         deletePost,

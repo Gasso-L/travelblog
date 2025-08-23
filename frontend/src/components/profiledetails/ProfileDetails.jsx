@@ -4,17 +4,20 @@ import {
   Row,
   Col,
   Card,
-  Button,
+  Accordion,
   Spinner,
   Alert,
 } from "react-bootstrap";
 import { FiEye, FiPlusCircle, FiEdit } from "react-icons/fi";
+import EditPostModal from "../postdetail/partials/editpostmodal/EditPostModal";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useProfile } from "../../contexts/ProfileContext";
 import EditProfileModal from "./partials/EditProfileModal";
 import DeletePostButton from "./partials/DeletePostButton";
+import { usePosts } from "../../contexts/PostContext";
 import { useAuth } from "../../contexts/AuthContext";
 import CustomButton from "../button/CustomButton";
+import { MdLocationOn } from "react-icons/md";
 import { Link } from "react-router-dom";
 import "./profiledetails.css";
 
@@ -29,12 +32,18 @@ const ProfileDetails = () => {
     updateProfile,
     deletePost,
     userProfile,
+    setUserPosts,
   } = useProfile();
 
   const location = useLocation();
 
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [showEditPostModal, setShowEditPostModal] = useState(false);
+
   const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
+
+  const { updatePost, uploadImages } = usePosts();
 
   useEffect(() => {
     if (location.state?.refresh && token) {
@@ -49,6 +58,45 @@ const ProfileDetails = () => {
       </Container>
     );
   }
+
+  const handleOpenEditPostModal = (post) => {
+    setSelectedPost(post);
+    setShowEditPostModal(true);
+  };
+
+  const handleCloseEditPostModal = () => {
+    setShowEditPostModal(false);
+    setSelectedPost(null);
+  };
+
+  const handlePostUpdate = async (updatedFields, newImages) => {
+    if (!selectedPost) return;
+
+    try {
+      const updatedPost = await updatePost(
+        selectedPost._id,
+        updatedFields,
+        token
+      );
+      let finalPost = updatedPost;
+
+      if (newImages.length > 0) {
+        const postWithImages = await uploadImages(selectedPost._id, newImages);
+        finalPost = postWithImages;
+      }
+
+      const updatedPosts = userPosts.map((p) =>
+        p._id === finalPost._id ? finalPost : p
+      );
+      setUserPosts(updatedPosts);
+
+      setSelectedPost(finalPost);
+
+      handleCloseEditPostModal();
+    } catch (err) {
+      handleCloseEditPostModal();
+    }
+  };
 
   return (
     <Container className="py-5">
@@ -108,21 +156,33 @@ const ProfileDetails = () => {
         </Col>
       </Row>
       <h3 className="my-4 fw-bold">Your Posts</h3>
-      <Row className={userPosts?.length > 0 ? "wrapper-post py-4" : ""}>
+      <Row
+        className={
+          userPosts?.length > 0
+            ? "wrapper-post wrapper-post-scrollable py-4"
+            : ""
+        }
+      >
         {!Array.isArray(userPosts) || userPosts.length === 0 ? (
           <p>You haven't created any posts yet...</p>
         ) : (
-          userPosts.map((post) => (
-            <Col md={6} lg={4} key={post._id} className="mb-4">
-              <Card className="post-profile-card h-100 rounded-4">
-                <Card.Body>
-                  <Card.Title className="text-truncate">
-                    {post.title}
-                  </Card.Title>
-                  <Card.Text className="text-truncate">
-                    {post.location}
-                  </Card.Text>
-                  <div className="d-flex d-lg-flex flex-lg-column gap-lg-3 justify-content-between align-items-center mt-5">
+          <Accordion className="mx-auto mt-4 accordion-posts">
+            {userPosts.map((post) => (
+              <Accordion.Item eventKey={String(post._id)} key={post._id}>
+                <Accordion.Header>{post.title}</Accordion.Header>
+                <Accordion.Body>
+                  <p className="mb-1 text-muted d-flex justify-content-start align-items-center gap-1">
+                    <MdLocationOn size={16} className="text-white" />
+                    <strong className="text-white">{post.location}</strong>
+                  </p>
+                  <div className="mb-4">
+                    {post.tags.map((tag) => (
+                      <span key={tag} className="badge bg-secondary me-1">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="d-flex flex-column d-md-flex flex-md-row gap-2 gap-md-0 justify-content-md-between align-items-md-center mt-5">
                     <CustomButton
                       variant="outline"
                       onClick={() => navigate(`/posts/${post._id}`)}
@@ -131,15 +191,23 @@ const ProfileDetails = () => {
                       <FiEye />
                       View Post
                     </CustomButton>
+                    <CustomButton
+                      variant="accent"
+                      onClick={() => handleOpenEditPostModal(post)}
+                      className="d-flex justify-content-center align-items-center gap-2"
+                    >
+                      <FiEdit />
+                      Edit Post
+                    </CustomButton>
                     <DeletePostButton
                       postId={post._id}
                       onDeleted={deletePost}
                     />
                   </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))
+                </Accordion.Body>
+              </Accordion.Item>
+            ))}
+          </Accordion>
         )}
       </Row>
 
@@ -149,6 +217,15 @@ const ProfileDetails = () => {
         userData={userData}
         onProfileUpdated={updateProfile}
       />
+
+      {selectedPost && (
+        <EditPostModal
+          show={showEditPostModal}
+          handleClose={handleCloseEditPostModal}
+          postData={selectedPost}
+          onPostUpdated={handlePostUpdate}
+        />
+      )}
     </Container>
   );
 };
